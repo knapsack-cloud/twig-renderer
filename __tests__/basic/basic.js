@@ -34,11 +34,6 @@ describe('basic', () => {
     const expected = await fs.readFile(path.join(__dirname, 'expected', 'hello-world.html'), 'utf8');
     const actual = await fs.readFile(path.join(__dirname, 'dist', 'hello-world.html'), 'utf8');
 
-    console.log({
-      expected,
-      actual,
-    });
-
     expect(actual.trim()).toEqual(expected.trim());
   });
 
