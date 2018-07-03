@@ -4,10 +4,20 @@ const fs = require('fs-extra');
 const TwigRenderer = require('../../src');
 
 // @todo Make this work and remove `.skip`
-describe.skip('Namespaces', () => {
+describe('Namespaces', () => {
   const twigRenderer = new TwigRenderer({
     src: {
       roots: [path.join(__dirname, 'src')],
+      namespaces: [
+        {
+          id: 'atoms',
+          paths: [path.join(__dirname, 'atoms')],
+        },
+        {
+          id: 'molecules',
+          paths: [path.join(__dirname, 'molecules')],
+        },
+      ],
     },
     autoescape: false,
     verbose: true,

@@ -27,6 +27,9 @@ class TwigRenderer {
       console.error(msg);
       throw new Error(msg);
     }
+    if (this.config.src.namespaces) {
+      // @todo Validate that all namespace paths exist
+    }
   }
 
   async init() {
