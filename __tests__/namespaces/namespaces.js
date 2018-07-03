@@ -3,7 +3,7 @@ const fs = require('fs-extra');
 
 const TwigRenderer = require('../../src');
 
-describe.skip('Namespaces', () => {
+describe('Namespaces', () => {
   const twigRenderer = new TwigRenderer({
     src: {
       roots: [path.join(__dirname, 'src')],
