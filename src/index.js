@@ -31,6 +31,7 @@ class TwigRenderer {
   }
 
   async init() {
+    await sleep(1000);
     const [port] = await fp(8000, 9000);
     this.settings.phpServerUrl = `127.0.0.1:${port}`;
 
