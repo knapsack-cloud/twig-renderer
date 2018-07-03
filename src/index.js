@@ -14,8 +14,6 @@ const configSchema = require('./config.schema');
 
 const validateSchemaAndAssignDefaults = ajv.compile(configSchema);
 
-const sharedConfigPath = path.join(__dirname, 'shared-config.json');
-
 class TwigRenderer {
   constructor(userConfig) {
     this.settings = {};
@@ -33,10 +31,12 @@ class TwigRenderer {
   }
 
   async init() {
-    // @todo Pass config to PHP server a better way than writing JSON file, then reading in PHP
-    await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
     const [port] = await fp(8000, 9000);
     this.settings.phpServerUrl = `127.0.0.1:${port}`;
+
+    const sharedConfigPath = path.join(__dirname, `shared-config--${port}.json`);
+    // @todo Pass config to PHP server a better way than writing JSON file, then reading in PHP
+    await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
 
     this.phpServer = execa('php', [
       '-S',
@@ -75,8 +75,18 @@ class TwigRenderer {
       });
 
       const { status, headers, ok } = res;
+      const contentType = headers.get('Content-Type');
       const warning = headers.get('Warning');
-      const results = await res.json();
+      let results;
+      if (contentType === 'application/json') {
+        results = await res.json();
+      } else {
+        results = {
+          ok,
+          message: warning,
+          html: await res.text(),
+        };
+      }
 
       if (this.config.verbose) {
         console.log('vvvvvvvvvvvvvvv');

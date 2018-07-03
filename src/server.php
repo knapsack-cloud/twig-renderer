@@ -4,15 +4,27 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 use BasaltInc\TwigRenderer\TwigRenderer;
 
-$configString = file_get_contents(dirname(__FILE__) . '/shared-config.json');
-if (!$configString) {
-  echo 'No shared-config.json found.';
-  exit(1);
-}
-$config = json_decode($configString, true);
-
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
+
+$configFilePath = dirname(__FILE__) . '/shared-config--' . $_SERVER['SERVER_PORT'] . '.json';
+// @todo Deliver nice error if this fails
+$configString = file_get_contents($configFilePath);
+
+if (!$configString) {
+  $msg = 'No configFile found at: ' . $cliOptions['configFile'];
+  http_response_code(500);
+  header('Warning: ' . $msg);
+  echo json_encode([
+    'ok' => false,
+    'message' => $msg,
+  ]);
+  exit(1);
+}
+// deleting the file
+unlink($configFilePath);
+$config = json_decode($configString, true);
+
 
 
 // HTTP Status Codes Used
