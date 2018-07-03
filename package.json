@@ -1,0 +1,49 @@
+{
+  "name": "@basalt/twig-renderer",
+  "version": "0.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "npm run lint -- --fix",
+    "jest": "jest",
+    "test": "npm run lint && npm run jest",
+    "precommit": "npm run lint:fix",
+    "prepush": "npm test",
+    "prepublish": "composer install"
+  },
+  "dependencies": {
+    "execa": "^0.10.0",
+    "find-free-port": "^2.0.0",
+    "fs-extra": "^6.0.1",
+    "node-fetch": "^2.1.2",
+    "sleep-promise": "^8.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^17.0.0",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-jest": "^21.17.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.10.0",
+    "husky": "^0.14.3",
+    "jest": "^23.2.0"
+  },
+  "files": [
+    "src",
+    "vendor"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/basaltinc/twig-renderer.git"
+  },
+  "keywords": [
+    "twig"
+  ],
+  "author": "Basalt",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/basaltinc/twig-renderer/issues"
+  },
+  "homepage": "https://github.com/basaltinc/twig-renderer#readme"
+}

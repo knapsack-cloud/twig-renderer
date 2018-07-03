@@ -1,0 +1,12 @@
+{
+  "name": "basaltinc/twig-renderer",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "BasaltInc\\TwigRenderer\\": "src/"
+    }
+  },
+  "require": {
+    "twig/twig": "^1.0.0"
+  }
+}
