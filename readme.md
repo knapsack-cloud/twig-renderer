@@ -1,5 +1,9 @@
 # Twig Renderer
 
+> Render templates using Twig PHP, via this Node JS renderer.
+
+*Special thanks to [Salem Ghoweri](https://twitter.com/salem_ghoweri) for collaboration on this project!*
+
 # How to Use
 
 **Currently in early beta - highly undocumented; use at your own risk. API will change often.**
@@ -15,5 +19,5 @@ npm install --save @basalt/twig-renderer
 
 ```bash
 npm install
-composer install
+npm run setup
 ```

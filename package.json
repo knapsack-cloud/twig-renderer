@@ -10,7 +10,8 @@
     "test": "npm run lint && npm run jest",
     "precommit": "npm run lint:fix",
     "prepush": "npm test",
-    "prepublish": "composer install"
+    "prepublish": "composer install",
+    "setup": "composer install"
   },
   "dependencies": {
     "execa": "^0.10.0",
@@ -33,6 +34,7 @@
     "src",
     "vendor"
   ],
+  "commentOnFiles": "we are explicitely including 'vendor' in the 'files' array above so it is present on install without the need to run 'composer install'. ",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/basaltinc/twig-renderer.git"
@@ -40,7 +42,16 @@
   "keywords": [
     "twig"
   ],
-  "author": "Basalt",
+  "maintainers": [
+    {
+      "name": "Evan Lovely",
+      "url": "http://evanlovely.com"
+    },
+    {
+      "name": "Salem Ghoweri",
+      "url": "https://twitter.com/salem_ghoweri"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/basaltinc/twig-renderer/issues"
