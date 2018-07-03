@@ -5,7 +5,11 @@ const TwigRenderer = require('../../src');
 
 describe('basic', () => {
   const twigRenderer = new TwigRenderer({
-    root: path.join(__dirname, 'src'),
+    src: {
+      roots: [
+        path.join(__dirname, 'src'),
+      ],
+    },
     autoescape: false,
     verbose: true,
   });
