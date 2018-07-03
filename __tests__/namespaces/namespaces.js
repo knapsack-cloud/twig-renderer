@@ -3,7 +3,6 @@ const fs = require('fs-extra');
 
 const TwigRenderer = require('../../src');
 
-// @todo Make this work and remove `.skip`
 describe('Namespaces', () => {
   const twigRenderer = new TwigRenderer({
     src: {
@@ -34,6 +33,8 @@ describe('Namespaces', () => {
     } else {
       console.error('Error: ', results.message);
     }
+
+    expect(results.ok).toEqual(true);
 
     const expected = await fs.readFile(path.join(__dirname, 'expected', 'result.html'), 'utf8');
     const actual = await fs.readFile(path.join(__dirname, 'dist', 'result.html'), 'utf8');
