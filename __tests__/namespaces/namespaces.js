@@ -6,7 +6,9 @@ const TwigRenderer = require('../../src');
 // @todo Make this work and remove `.skip`
 describe.skip('Namespaces', () => {
   const twigRenderer = new TwigRenderer({
-    root: path.join(__dirname, 'src'),
+    src: {
+      roots: [path.join(__dirname, 'src')],
+    },
     autoescape: false,
     verbose: true,
   });
