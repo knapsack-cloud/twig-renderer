@@ -1,0 +1,26 @@
+{
+  "type": "object",
+  "required": ["root"],
+  "additionalProperties": false,
+  "properties": {
+    "root": {
+      "type": "string",
+      "description": "Root directory for Twig Loader"
+    },
+    "autoescape": {
+      "type": "boolean",
+      "default": false,
+      "description": "Passed to creation of Twig Environment."
+    },
+    "debug": {
+      "type": "boolean",
+      "default": true,
+      "description": "Passed to creation of Twig Environment."
+    },
+    "verbose": {
+      "type": "boolean",
+      "default": false,
+      "description": "Should the terminal output a lot of info?"
+    }
+  }
+}

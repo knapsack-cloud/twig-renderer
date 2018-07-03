@@ -5,19 +5,28 @@ const fetch = require('node-fetch');
 const sleep = require('sleep-promise');
 const fs = require('fs-extra');
 const execa = require('execa');
+const Ajv = require('ajv');
+
+const ajv = new Ajv({
+  useDefaults: true,
+});
+const configSchema = require('./config.schema');
+
+const validateSchemaAndAssignDefaults = ajv.compile(configSchema);
 
 const sharedConfigPath = path.join(__dirname, 'shared-config.json');
 
 class TwigRenderer {
-  constructor(config) {
-    this.config = Object.assign({
-      // Root directory for Twig Loader
-      root: '', // required
-      autoescape: false,
-      debug: true,
-      verbose: false,
-    }, config);
+  constructor(userConfig) {
     this.settings = {};
+    this.config = Object.assign({}, userConfig);
+    const isValid = validateSchemaAndAssignDefaults(this.config);
+    if (!isValid) {
+      // @todo Improve error message
+      const msg = 'Error: config schema is not valid. Please check config.schema.json. Sorry for vague error.';
+      console.error(msg);
+      throw new Error(msg);
+    }
   }
 
   async init() {
