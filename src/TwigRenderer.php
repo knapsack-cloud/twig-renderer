@@ -26,6 +26,7 @@ class TwigRenderer {
     $this->twig = new \Twig_Environment($loaders, [
       'debug' => $config['debug'],
       'autoescape' => $config['autoescape'],
+      'cache' => false, // @todo Implement Twig caching
     ]);
   }
 
