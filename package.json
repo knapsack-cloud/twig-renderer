@@ -7,6 +7,7 @@
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
     "jest": "jest",
+    "jest:watch": "npm run jest -- --watch",
     "test": "npm run lint && npm run jest",
     "precommit": "npm run lint:fix",
     "prepush": "npm test",
