@@ -35,7 +35,7 @@ class TwigRenderer {
   async init() {
     // @todo Pass config to PHP server a better way than writing JSON file, then reading in PHP
     await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
-    const [port] = await fp(3000);
+    const [port] = await fp(8000, 9000);
     this.settings.phpServerUrl = `127.0.0.1:${port}`;
 
     this.phpServer = execa('php', [
