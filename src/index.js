@@ -48,7 +48,7 @@ class TwigRenderer {
     this.phpServer.stderr.pipe(process.stderr);
 
     if (this.config.verbose) {
-      console.log('TwigRender js init');
+      console.log(`TwigRender js init complete. PHP server started on port ${port}`);
     }
 
     // @todo detect when PHP server is ready to go; in meantime, we'll just pause for a moment
