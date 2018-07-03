@@ -72,15 +72,20 @@ class TwigRenderer {
       });
 
       const { status, headers, ok } = res;
-      console.log(`Status Code: ${status}. Ok: ${ok ? 'yes' : 'no'}`);
       const warning = headers.get('Warning');
-      if (warning) {
-        console.warning('Warning: ', warning);
-      }
       const results = await res.json();
+
       if (this.config.verbose) {
-        console.log(`Rendered ${templatePath}, received:`);
+        console.log('vvvvvvvvvvvvvvv');
+        console.log(`Render request received: Ok: ${ok ? 'yes' : 'no'}, Status Code: ${status}.`);
+        console.log(templatePath);
+        if (warning) {
+          console.warning('Warning: ', warning);
+        }
         console.log(results);
+        console.log(`End: ${templatePath}`);
+        console.log('^^^^^^^^^^^^^^^^');
+        console.log();
       }
       return results;
     } catch (e) {
