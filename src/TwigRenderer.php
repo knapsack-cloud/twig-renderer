@@ -10,7 +10,7 @@ class TwigRenderer {
 
   function __construct($config) {
     $loaders = new \Twig_Loader_Chain([
-        new \Twig_Loader_Filesystem($config['root']),
+        new \Twig_Loader_Filesystem($config['src']['roots']),
     ]);
 
     $this->twig = new \Twig_Environment($loaders, [

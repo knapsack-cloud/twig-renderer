@@ -1,11 +1,42 @@
 {
   "type": "object",
-  "required": ["root"],
+  "required": ["src"],
   "additionalProperties": false,
   "properties": {
-    "root": {
-      "type": "string",
-      "description": "Root directory for Twig Loader"
+    "src": {
+      "type": "object",
+      "title": "Twig Source Files",
+      "required": ["roots"],
+      "properties": {
+        "roots": {
+          "type": "array",
+          "description": "Root directories for Twig Loader",
+          "items": {
+            "type": "string"
+          }
+        },
+        "namespaces": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "title": "Individual Namespaces",
+            "required": ["id", "paths"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Machine Name of Namespace; will use as `@id/file.twig`."
+              },
+              "paths": {
+                "type": "array",
+                "description": "Paths to directories to look for twig files in under this Namespace.",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     },
     "autoescape": {
       "type": "boolean",
