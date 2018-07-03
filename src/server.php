@@ -14,7 +14,6 @@ $config = json_decode($configString, true);
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-$twigRenderer = new TwigRenderer($config);
 
 // HTTP Status Codes Used
 // 200 OK - The standard response for successful HTTP requests.
@@ -36,38 +35,51 @@ $templatePath = '';
 $msgs = [];
 $json = '';
 $html = '';
+$twigRenderer = null;
 
-if (key_exists('templatePath', $query)) {
-  $templatePath = $query['templatePath'];
-} else {
-  $msgs[] = "Url must have a query param of 'templatePath' for which twig template.";
+try {
+  $twigRenderer = new TwigRenderer($config);
+} catch (\Exception $e) {
+  $msg = 'Error creating Twig Environment. ' . $e->getMessage();
+  $msgs[] = $msg;
   $responseCode = 400;
+  $response['ok'] = false;
+  $response['message'] = $msg;
 }
 
-if ($templatePath && $method === 'POST') {
-  try {
-    $json = file_get_contents('php://input');
-  } catch(\Exception $e) {
-    $msgs[] = 'No POST body found. ' . $e->getMessage();
+if ($twigRenderer) {
+  if (key_exists('templatePath', $query)) {
+    $templatePath = $query['templatePath'];
+  } else {
+    $msgs[] = "Url must have a query param of 'templatePath' for which twig template.";
     $responseCode = 400;
   }
-  if ($json) {
+
+  if ($templatePath && $method === 'POST') {
     try {
-      $data = json_decode($json, true);
-    } catch (\Exception $e) {
-      $msgs[] = 'Not able to parse JSON. ' . $e->getMessage();
+      $json = file_get_contents('php://input');
+    } catch(\Exception $e) {
+      $msgs[] = 'No POST body found. ' . $e->getMessage();
       $responseCode = 400;
     }
+    if ($json) {
+      try {
+        $data = json_decode($json, true);
+      } catch (\Exception $e) {
+        $msgs[] = 'Not able to parse JSON. ' . $e->getMessage();
+        $responseCode = 400;
+      }
+    }
   }
-}
 
-if ($templatePath) {
-  try {
-    $response = $twigRenderer->render($templatePath, $data);
-    $responseCode = 200;
-  } catch (\Exception $e) {
-    $msgs[] = $e->getMessage();
-    $responseCode = 400;
+  if ($templatePath) {
+    try {
+      $response = $twigRenderer->render($templatePath, $data);
+      $responseCode = 200;
+    } catch (\Exception $e) {
+      $msgs[] = $e->getMessage();
+      $responseCode = 400;
+    }
   }
 }
 

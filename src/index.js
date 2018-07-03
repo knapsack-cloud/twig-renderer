@@ -83,7 +83,7 @@ class TwigRenderer {
         console.log(`Render request received: Ok: ${ok ? 'yes' : 'no'}, Status Code: ${status}.`);
         console.log(templatePath);
         if (warning) {
-          console.warning('Warning: ', warning);
+          console.warn('Warning: ', warning);
         }
         console.log(results);
         console.log(`End: ${templatePath}`);
