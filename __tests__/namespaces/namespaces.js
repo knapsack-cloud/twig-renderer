@@ -3,11 +3,20 @@ const fs = require('fs-extra');
 
 const TwigRenderer = require('../../src');
 
-// @todo Make this work and remove `.skip`
-describe.skip('Namespaces', () => {
+describe('Namespaces', () => {
   const twigRenderer = new TwigRenderer({
     src: {
       roots: [path.join(__dirname, 'src')],
+      namespaces: [
+        {
+          id: 'atoms',
+          paths: [path.join(__dirname, 'atoms')],
+        },
+        {
+          id: 'molecules',
+          paths: [path.join(__dirname, 'molecules')],
+        },
+      ],
     },
     autoescape: false,
     verbose: true,
@@ -24,6 +33,8 @@ describe.skip('Namespaces', () => {
     } else {
       console.error('Error: ', results.message);
     }
+
+    expect(results.ok).toEqual(true);
 
     const expected = await fs.readFile(path.join(__dirname, 'expected', 'result.html'), 'utf8');
     const actual = await fs.readFile(path.join(__dirname, 'dist', 'result.html'), 'utf8');

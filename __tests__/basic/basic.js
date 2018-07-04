@@ -29,10 +29,12 @@ describe('basic', () => {
       console.error('Error: ', results.message);
     }
 
+    expect(results.ok).toEqual(true);
+
     const expected = await fs.readFile(path.join(__dirname, 'expected', 'hello-world.html'), 'utf8');
     const actual = await fs.readFile(path.join(__dirname, 'dist', 'hello-world.html'), 'utf8');
 
-    expect(expected.trim()).toEqual(actual.trim());
+    expect(actual.trim()).toEqual(expected.trim());
   });
 
   afterAll(() => twigRenderer.closeServer());

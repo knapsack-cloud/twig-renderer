@@ -14,7 +14,17 @@ const configSchema = require('./config.schema');
 
 const validateSchemaAndAssignDefaults = ajv.compile(configSchema);
 
-const sharedConfigPath = path.join(__dirname, 'shared-config.json');
+
+/**
+ * Returns a random integer between min (inclusive) and max (inclusive)
+ * Using Math.round() will give you a non-uniform distribution!
+ * @param min {int}
+ * @param max {int}
+ * @returns {int}
+ */
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 class TwigRenderer {
   constructor(userConfig) {
@@ -27,13 +37,22 @@ class TwigRenderer {
       console.error(msg);
       throw new Error(msg);
     }
+    if (this.config.src.namespaces) {
+      // @todo Validate that all namespace paths exist
+    }
   }
 
   async init() {
-    // @todo Pass config to PHP server a better way than writing JSON file, then reading in PHP
-    await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
-    const [port] = await fp(3000);
+    // @todo improve method of selecting a port to try
+    // Just because a port is available now, doesn't mean it wont be taken in 5ms :P
+    const portAttempt = getRandomInt(10000, 65000);
+    const [port] = await fp(portAttempt);
     this.settings.phpServerUrl = `127.0.0.1:${port}`;
+
+    const sharedConfigPath = path.join(__dirname, `shared-config--${port}.json`);
+    await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
+
+    // @todo Pass config to PHP server a better way than writing JSON file, then reading in PHP
 
     this.phpServer = execa('php', [
       '-S',
@@ -41,15 +60,16 @@ class TwigRenderer {
       path.join(__dirname, 'server.php'),
     ]);
 
+    // @todo wrap this in config for seeing it besides `verbose` - too noisy
     this.phpServer.stdout.pipe(process.stdout);
     this.phpServer.stderr.pipe(process.stderr);
 
-    if (this.config.verbose) {
-      console.log('TwigRender js init');
-    }
-
     // @todo detect when PHP server is ready to go; in meantime, we'll just pause for a moment
-    await sleep(1000);
+    await sleep(3000);
+
+    if (this.config.verbose) {
+      console.log(`TwigRender js init complete. PHP server started on port ${port}`);
+    }
     return true;
   }
 
@@ -72,15 +92,25 @@ class TwigRenderer {
       });
 
       const { status, headers, ok } = res;
+      const contentType = headers.get('Content-Type');
       const warning = headers.get('Warning');
-      const results = await res.json();
+      let results;
+      if (contentType === 'application/json') {
+        results = await res.json();
+      } else {
+        results = {
+          ok,
+          message: warning,
+          html: await res.text(),
+        };
+      }
 
       if (this.config.verbose) {
         console.log('vvvvvvvvvvvvvvv');
         console.log(`Render request received: Ok: ${ok ? 'yes' : 'no'}, Status Code: ${status}.`);
         console.log(templatePath);
         if (warning) {
-          console.warning('Warning: ', warning);
+          console.warn('Warning: ', warning);
         }
         console.log(results);
         console.log(`End: ${templatePath}`);
