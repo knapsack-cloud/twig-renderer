@@ -11,9 +11,14 @@ const ajv = new Ajv({
   useDefaults: true,
 });
 const configSchema = require('./config.schema');
-
 const validateSchemaAndAssignDefaults = ajv.compile(configSchema);
 
+const serverStates = Object.freeze({
+  STOPPED: 'STOPPED',
+  STARTING: 'STARTING',
+  READY: 'READY',
+  STOPPING: 'STOPPING',
+});
 
 /**
  * Returns a random integer between min (inclusive) and max (inclusive)
@@ -21,6 +26,7 @@ const validateSchemaAndAssignDefaults = ajv.compile(configSchema);
  * @param min {int}
  * @param max {int}
  * @returns {int}
+ * @todo Move to utils
  */
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -28,6 +34,7 @@ function getRandomInt(min, max) {
 
 class TwigRenderer {
   constructor(userConfig) {
+    this.serverState = serverStates.STOPPED;
     this.settings = {};
     this.config = Object.assign({}, userConfig);
     const isValid = validateSchemaAndAssignDefaults(this.config);
@@ -43,6 +50,8 @@ class TwigRenderer {
   }
 
   async init() {
+  this.serverState = serverStates.STARTING;
+
     // @todo improve method of selecting a port to try
     // Just because a port is available now, doesn't mean it wont be taken in 5ms :P
     const portAttempt = getRandomInt(10000, 65000);
@@ -66,15 +75,28 @@ class TwigRenderer {
 
     // @todo detect when PHP server is ready to go; in meantime, we'll just pause for a moment
     await sleep(3000);
+    this.serverState = serverStates.READY; 
 
     if (this.config.verbose) {
       console.log(`TwigRender js init complete. PHP server started on port ${port}`);
     }
-    return true;
+    return this.serverState;
   }
 
   closeServer() {
     this.phpServer.kill();
+  }
+
+  /**
+  * Is PHP sever ready to render?
+  * @returns {boolean}
+  */
+  isReady() {
+    return this.serverState === serverStates.READY;
+  }
+
+  getServerState() {
+    return this.serverState;
   }
 
   async render(templatePath, data = {}) {
