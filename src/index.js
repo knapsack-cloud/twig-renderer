@@ -57,7 +57,7 @@ class TwigRenderer {
     const portAttempt = getRandomInt(10000, 65000);
     const [port] = await fp(portAttempt);
     this.phpServerPort = port;
-    this.phpServerUrl = `127.0.0.1:${port}`;
+    this.phpServerUrl = `http://127.0.0.1:${port}`;
 
     const sharedConfigPath = path.join(__dirname, `shared-config--${port}.json`);
     await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
@@ -66,7 +66,7 @@ class TwigRenderer {
 
     this.phpServer = execa('php', [
       '-S',
-      this.phpServerUrl,
+      `127.0.0.1:${port}`,
       path.join(__dirname, 'server.php'),
     ]);
 
@@ -106,7 +106,7 @@ class TwigRenderer {
     }
 
     try {
-      const requestUrl = `http://${this.phpServerUrl}?${qs.stringify({
+      const requestUrl = `${this.phpServerUrl}?${qs.stringify({
         templatePath,
       })}`;
 
