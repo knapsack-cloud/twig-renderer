@@ -15,8 +15,6 @@ describe('basic', () => {
     verbose: true,
   });
 
-  beforeAll(() => twigRenderer.init());
-
   test('basic1', async () => {
     await fs.emptyDir(path.join(__dirname, 'dist'));
     const results = await twigRenderer.render('hello-world.twig', {
@@ -26,6 +24,7 @@ describe('basic', () => {
     if (results.ok) {
       await fs.writeFile(path.join(__dirname, 'dist', 'hello-world.html'), results.html);
     } else {
+      console.log(results);
       console.error('Error: ', results.message);
     }
 

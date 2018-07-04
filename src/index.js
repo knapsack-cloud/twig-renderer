@@ -50,6 +50,14 @@ class TwigRenderer {
   }
 
   async init() {
+    if (this.serverState === serverStates.STARTING) {
+      // console.log('No need to re-init');
+      return this.serverState;
+    }
+
+    if (this.config.verbose) {
+      // console.log('Initializing PHP Server...');
+    }
     this.serverState = serverStates.STARTING;
 
     // @todo improve method of selecting a port to try
@@ -59,10 +67,9 @@ class TwigRenderer {
     this.phpServerPort = port;
     this.phpServerUrl = `http://127.0.0.1:${port}`;
 
+    // @todo Pass config to PHP server a better way than writing JSON file, then reading in PHP
     const sharedConfigPath = path.join(__dirname, `shared-config--${port}.json`);
     await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
-
-    // @todo Pass config to PHP server a better way than writing JSON file, then reading in PHP
 
     this.phpServer = execa('php', [
       '-S',
@@ -70,17 +77,37 @@ class TwigRenderer {
       path.join(__dirname, 'server.php'),
     ]);
 
+    this.phpServer.on('close', async () => {
+      // console.log(`Server ${this.phpServerPort} event: 'close'`);
+      await fs.unlink(sharedConfigPath);
+      this.serverState = serverStates.STOPPED;
+    });
+
+    this.phpServer.on('exit', () => {
+      // console.log(`Server ${this.phpServerPort} event: 'exit'`);
+      this.serverState = serverStates.STOPPING;
+    });
+
+    this.phpServer.on('disconnect', () => {
+      // console.log(`Server ${this.phpServerPort} event: 'disconnect'`);
+    });
+
+    this.phpServer.on('error', () => {
+      // console.log(`Server ${this.phpServerPort} event: 'error'`);
+    });
+
     // @todo wrap this in config for seeing it besides `verbose` - too noisy
     this.phpServer.stdout.pipe(process.stdout);
     this.phpServer.stderr.pipe(process.stderr);
 
     // @todo detect when PHP server is ready to go; in meantime, we'll just pause for a moment
-    await sleep(3000);
-    this.serverState = serverStates.READY;
+    // await sleep(3000);
+    // this.serverState = serverStates.READY;
 
     if (this.config.verbose) {
-      console.log(`TwigRender js init complete. PHP server started on port ${port}`);
+      // console.log(`TwigRender js init complete. PHP server started on port ${port}`);
     }
+    this.checkServerWhileStarting();
     return this.serverState;
   }
 
@@ -92,8 +119,32 @@ class TwigRenderer {
   * Is PHP sever ready to render?
   * @returns {boolean}
   */
-  isReady() {
-    return this.serverState === serverStates.READY;
+  async checkIfServerIsReady() {
+    if (this.config.verbose) {
+      // console.log(`Checking Server ${this.phpServerPort} was ${this.serverState}`);
+    }
+    try {
+      const res = await fetch(this.phpServerUrl);
+      const { ok } = res;
+      if (ok) {
+        this.serverState = serverStates.READY;
+      }
+      if (this.config.verbose) {
+        // console.log(`Server ${this.phpServerPort} is ${this.serverState}`);
+      }
+      return ok;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async checkServerWhileStarting() {
+    while (this.serverState === serverStates.STARTING) {
+      // console.log(`checkServerWhileStarting: ${this.serverState}`);
+      await this.checkIfServerIsReady(); // eslint-disable-line no-await-in-loop
+      await sleep(100); // eslint-disable-line no-await-in-loop
+    }
+    return this.serverState;
   }
 
   getServerState() {
@@ -101,6 +152,14 @@ class TwigRenderer {
   }
 
   async render(templatePath, data = {}) {
+    if (this.serverState === serverStates.STOPPED) {
+      await this.init();
+    }
+
+    while (this.serverState !== serverStates.READY) {
+      await sleep(250); // eslint-disable-line no-await-in-loop
+    }
+
     if (this.config.verbose) {
       console.log(`About to render & server on port ${this.phpServerPort} is ${this.serverState}`);
     }
@@ -133,16 +192,15 @@ class TwigRenderer {
       }
 
       if (this.config.verbose) {
-        console.log('vvvvvvvvvvvvvvv');
-        console.log(`Render request received: Ok: ${ok ? 'yes' : 'no'}, Status Code: ${status}.`);
-        console.log(templatePath);
+        // console.log('vvvvvvvvvvvvvvv');
+        console.log(`Render request received: Ok: ${ok ? 'true' : 'false'}, Status Code: ${status}, templatePath: ${templatePath}.`);
         if (warning) {
           console.warn('Warning: ', warning);
         }
-        console.log(results);
-        console.log(`End: ${templatePath}`);
-        console.log('^^^^^^^^^^^^^^^^');
-        console.log();
+        // console.log(results);
+        // console.log(`End: ${templatePath}`);
+        // console.log('^^^^^^^^^^^^^^^^');
+        // console.log();
       }
       return results;
     } catch (e) {
