@@ -14,6 +14,18 @@ const configSchema = require('./config.schema');
 
 const validateSchemaAndAssignDefaults = ajv.compile(configSchema);
 
+
+/**
+ * Returns a random integer between min (inclusive) and max (inclusive)
+ * Using Math.round() will give you a non-uniform distribution!
+ * @param min {int}
+ * @param max {int}
+ * @returns {int}
+ */
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 class TwigRenderer {
   constructor(userConfig) {
     this.settings = {};
@@ -32,7 +44,10 @@ class TwigRenderer {
 
   async init() {
     await sleep(1000);
-    const [port] = await fp(8000, 9000);
+    // @todo improve method of selecting a port to try
+    // Just because a port is available now, doesn't mean it wont be taken in 5ms :P
+    const portAttempt = getRandomInt(10000, 65000);
+    const [port] = await fp(portAttempt);
     this.settings.phpServerUrl = `127.0.0.1:${port}`;
 
     const sharedConfigPath = path.join(__dirname, `shared-config--${port}.json`);
