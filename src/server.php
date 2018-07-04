@@ -63,8 +63,9 @@ if ($twigRenderer) {
   if (key_exists('templatePath', $query)) {
     $templatePath = $query['templatePath'];
   } else {
-    $msgs[] = "Url must have a query param of 'templatePath' for which twig template.";
-    $responseCode = 400;
+    // @todo Provide more clear way to "ping" the server and know that it is ready.
+    $msgs[] = "Url must have a query param of 'templatePath' for which twig template to render, but yes - the server is running.";
+    $responseCode = 202;
   }
 
   if ($templatePath && $method === 'POST') {
