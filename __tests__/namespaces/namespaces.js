@@ -22,8 +22,6 @@ describe('Namespaces', () => {
     verbose: true,
   });
 
-  beforeAll(() => twigRenderer.init());
-
   test('Namespaces1', async () => {
     await fs.emptyDir(path.join(__dirname, 'dist'));
     const results = await twigRenderer.render('@molecules/water.twig');
