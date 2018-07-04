@@ -36,7 +36,6 @@ function getRandomInt(min, max) {
 class TwigRenderer {
   constructor(userConfig) {
     this.serverState = serverStates.STOPPED;
-    this.settings = {};
     this.config = Object.assign({}, userConfig);
     const isValid = validateSchemaAndAssignDefaults(this.config);
     if (!isValid) {
@@ -57,7 +56,8 @@ class TwigRenderer {
     // Just because a port is available now, doesn't mean it wont be taken in 5ms :P
     const portAttempt = getRandomInt(10000, 65000);
     const [port] = await fp(portAttempt);
-    this.settings.phpServerUrl = `127.0.0.1:${port}`;
+    this.phpServerPort = port;
+    this.phpServerUrl = `127.0.0.1:${port}`;
 
     const sharedConfigPath = path.join(__dirname, `shared-config--${port}.json`);
     await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
@@ -66,7 +66,7 @@ class TwigRenderer {
 
     this.phpServer = execa('php', [
       '-S',
-      this.settings.phpServerUrl,
+      this.phpServerUrl,
       path.join(__dirname, 'server.php'),
     ]);
 
@@ -106,7 +106,7 @@ class TwigRenderer {
     }
 
     try {
-      const requestUrl = `http://${this.settings.phpServerUrl}?${qs.stringify({
+      const requestUrl = `http://${this.phpServerUrl}?${qs.stringify({
         templatePath,
       })}`;
 
