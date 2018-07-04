@@ -11,6 +11,7 @@ const ajv = new Ajv({
   useDefaults: true,
 });
 const configSchema = require('./config.schema');
+
 const validateSchemaAndAssignDefaults = ajv.compile(configSchema);
 
 const serverStates = Object.freeze({
@@ -50,7 +51,7 @@ class TwigRenderer {
   }
 
   async init() {
-  this.serverState = serverStates.STARTING;
+    this.serverState = serverStates.STARTING;
 
     // @todo improve method of selecting a port to try
     // Just because a port is available now, doesn't mean it wont be taken in 5ms :P
@@ -75,7 +76,7 @@ class TwigRenderer {
 
     // @todo detect when PHP server is ready to go; in meantime, we'll just pause for a moment
     await sleep(3000);
-    this.serverState = serverStates.READY; 
+    this.serverState = serverStates.READY;
 
     if (this.config.verbose) {
       console.log(`TwigRender js init complete. PHP server started on port ${port}`);
@@ -100,6 +101,10 @@ class TwigRenderer {
   }
 
   async render(templatePath, data = {}) {
+    if (this.config.verbose) {
+      console.log(`About to render & server on port ${this.phpServerPort} is ${this.serverState}`);
+    }
+
     try {
       const requestUrl = `http://${this.settings.phpServerUrl}?${qs.stringify({
         templatePath,
