@@ -36,6 +36,7 @@ function getRandomInt(min, max) {
 class TwigRenderer {
   constructor(userConfig) {
     this.serverState = serverStates.STOPPED;
+    this.inProgressRequests = 0;
     this.config = Object.assign({}, userConfig);
     const isValid = validateSchemaAndAssignDefaults(this.config);
     if (!isValid) {
@@ -72,9 +73,9 @@ class TwigRenderer {
     await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
 
     this.phpServer = execa('php', [
-      '-S',
-      `127.0.0.1:${port}`,
-      path.join(__dirname, 'server.php'),
+      path.join(__dirname, 'server--async.php'),
+      port,
+      sharedConfigPath,
     ]);
 
     this.phpServer.on('close', async () => {
@@ -100,10 +101,6 @@ class TwigRenderer {
     this.phpServer.stdout.pipe(process.stdout);
     this.phpServer.stderr.pipe(process.stderr);
 
-    // @todo detect when PHP server is ready to go; in meantime, we'll just pause for a moment
-    // await sleep(3000);
-    // this.serverState = serverStates.READY;
-
     if (this.config.verbose) {
       // console.log(`TwigRender js init complete. PHP server started on port ${port}`);
     }
@@ -116,9 +113,9 @@ class TwigRenderer {
   }
 
   /**
-  * Is PHP sever ready to render?
-  * @returns {boolean}
-  */
+   * Is PHP sever ready to render?
+   * @returns {boolean}
+   */
   async checkIfServerIsReady() {
     if (this.config.verbose) {
       // console.log(`Checking Server ${this.phpServerPort} was ${this.serverState}`);
@@ -160,55 +157,69 @@ class TwigRenderer {
       await sleep(250); // eslint-disable-line no-await-in-loop
     }
 
+    while (this.inProgressRequests > this.config.maxConcurrency) {
+      await sleep(250); // eslint-disable-line no-await-in-loop
+    }
+
     if (this.config.verbose) {
       console.log(`About to render & server on port ${this.phpServerPort} is ${this.serverState}`);
     }
 
-    try {
-      const requestUrl = `${this.phpServerUrl}?${qs.stringify({
-        templatePath,
-      })}`;
+    this.inProgressRequests += 1;
+    const attempts = 3;
+    let attempt = 0;
+    let results;
 
-      const res = await fetch(requestUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+    while (attempt < attempts) {
+      try {
+        const requestUrl = `${this.phpServerUrl}?${qs.stringify({
+          templatePath,
+        })}`;
 
-      const { status, headers, ok } = res;
-      const contentType = headers.get('Content-Type');
-      const warning = headers.get('Warning');
-      let results;
-      if (contentType === 'application/json') {
-        results = await res.json();
-      } else {
-        results = {
-          ok,
-          message: warning,
-          html: await res.text(),
-        };
-      }
+        const res = await fetch(requestUrl, { // eslint-disable-line no-await-in-loop
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
 
-      if (this.config.verbose) {
-        // console.log('vvvvvvvvvvvvvvv');
-        console.log(`Render request received: Ok: ${ok ? 'true' : 'false'}, Status Code: ${status}, templatePath: ${templatePath}.`);
-        if (warning) {
-          console.warn('Warning: ', warning);
+        const { status, headers, ok } = res;
+        const contentType = headers.get('Content-Type');
+        const warning = headers.get('Warning');
+
+        if (contentType === 'application/json') {
+          results = await res.json(); // eslint-disable-line no-await-in-loop
+        } else {
+          results = {
+            ok,
+            message: warning,
+            html: await res.text(), // eslint-disable-line no-await-in-loop
+          };
         }
-        // console.log(results);
-        // console.log(`End: ${templatePath}`);
-        // console.log('^^^^^^^^^^^^^^^^');
-        // console.log();
+
+        if (this.config.verbose) {
+          // console.log('vvvvvvvvvvvvvvv');
+          console.log(`Render request received: Ok: ${ok ? 'true' : 'false'}, Status Code: ${status}, templatePath: ${templatePath}.`);
+          if (warning) {
+            console.warn('Warning: ', warning);
+          }
+          // console.log(results);
+          // console.log(`End: ${templatePath}`);
+          // console.log('^^^^^^^^^^^^^^^^');
+          // console.log();
+        }
+        break;
+      } catch (e) {
+        results = {
+          ok: false,
+          message: e.message,
+        };
+        attempt += 1;
       }
-      return results;
-    } catch (e) {
-      return {
-        ok: false,
-        message: e.message,
-      };
     }
+    this.inProgressRequests -= 1;
+    return results;
   }
 }
 

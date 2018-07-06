@@ -52,6 +52,11 @@
       "type": "boolean",
       "default": false,
       "description": "Should the terminal output a lot of info?"
+    },
+    "maxConcurrency": {
+      "type": "integer",
+      "default": 100,
+      "description": "How many concurrent template rendering requests to do. Reduce if you get errors."
     }
   }
 }
