@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Twig Extensions Twig Extensions - Simple Function 1`] = `
+Object {
+  "html": "<h1>Hello Custom World!</h1>",
+  "ok": true,
+}
+`;

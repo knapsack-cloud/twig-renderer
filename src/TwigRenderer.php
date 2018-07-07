@@ -28,6 +28,16 @@ class TwigRenderer {
       'autoescape' => $config['autoescape'],
       'cache' => false, // @todo Implement Twig caching
     ]);
+
+    if (isset($config['alterTwigEnv'])) {
+      foreach ($config['alterTwigEnv'] as $alter) {
+        $file = $alter['file'];
+        require_once $file;
+        foreach ($alter['functions'] as $function) {
+          $function($this->twig);
+        }
+      }
+    }
   }
 
   public function render($templatePath, $data = []) {
