@@ -7,6 +7,7 @@
       "type": "object",
       "title": "Twig Source Files",
       "required": ["roots"],
+      "additionalProperties": false,
       "properties": {
         "roots": {
           "type": "array",
@@ -21,6 +22,7 @@
             "type": "object",
             "title": "Individual Namespaces",
             "required": ["id", "paths"],
+            "additionalProperties": false,
             "properties": {
               "id": {
                 "type": "string",
@@ -33,6 +35,28 @@
                   "type": "string"
                 }
               }
+            }
+          }
+        }
+      }
+    },
+    "alterTwigEnv": {
+      "type": "array",
+      "title": "Alter Twig Environment",
+      "description": "A collection of PHP files and their functions to call that can alter the Twig_Environment right after it is created. This allows adding Twig Extensions and many others things.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "PHP file to include that contains the functions to call."
+          },
+          "functions": {
+            "type": "array",
+            "description": "PHP Functions to execute with a param of Twig_Environment.",
+            "items": {
+              "type": "string"
             }
           }
         }
