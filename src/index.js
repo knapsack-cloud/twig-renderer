@@ -176,6 +176,7 @@ class TwigRenderer {
           templatePath,
         })}`;
 
+        // @todo Fail if no response after X seconds
         const res = await fetch(requestUrl, { // eslint-disable-line no-await-in-loop
           method: 'POST',
           headers: {
