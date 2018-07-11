@@ -1,6 +1,6 @@
 const path = require('path');
 
-const TwigRenderer = require('../../src');
+const TwigRenderer = require('../../');
 
 describe('Twig Extensions', () => {
   const twigRenderer = new TwigRenderer({

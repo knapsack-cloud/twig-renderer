@@ -10,7 +10,7 @@ const Ajv = require('ajv');
 const ajv = new Ajv({
   useDefaults: true,
 });
-const configSchema = require('./config.schema');
+const configSchema = require('../config.schema');
 
 const validateSchemaAndAssignDefaults = ajv.compile(configSchema);
 

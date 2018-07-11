@@ -1,0 +1,10 @@
+{
+  "presets": [
+    ["env", {
+      "modules": false,
+      "targets": {
+        "node": "6.9"
+      }
+    }]
+  ]
+}
