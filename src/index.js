@@ -10,7 +10,7 @@ const Ajv = require('ajv');
 const ajv = new Ajv({
   useDefaults: true,
 });
-const configSchema = require('./config.schema');
+const configSchema = require('../config.schema');
 
 const validateSchemaAndAssignDefaults = ajv.compile(configSchema);
 
@@ -24,9 +24,9 @@ const serverStates = Object.freeze({
 /**
  * Returns a random integer between min (inclusive) and max (inclusive)
  * Using Math.round() will give you a non-uniform distribution!
- * @param min {int}
- * @param max {int}
- * @returns {int}
+ * @param {int} min - Lowest number
+ * @param {int} max - Highest number
+ * @returns {int} - A random number between the two
  * @todo Move to utils
  */
 function getRandomInt(min, max) {
@@ -114,7 +114,7 @@ class TwigRenderer {
 
   /**
    * Is PHP sever ready to render?
-   * @returns {boolean}
+   * @returns {boolean} - is ready
    */
   async checkIfServerIsReady() {
     if (this.config.verbose) {

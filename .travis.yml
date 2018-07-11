@@ -7,7 +7,7 @@ before_install:
 
 install:
 - npm install
-- npm run setup
+- npm run build
 
 script:
 - npm run test

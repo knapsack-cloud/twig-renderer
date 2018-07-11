@@ -1,5 +1,6 @@
 {
   "name": "basaltinc/twig-renderer",
+  "description": "Render templates using Twig PHP, via this Node JS renderer.",
   "license": "MIT",
   "autoload": {
     "psr-4": {
@@ -7,6 +8,7 @@
     }
   },
   "require": {
+    "ext-json": "*",
     "twig/twig": "^1.0.0",
     "react/http": "^0.8.3"
   }
