@@ -1,11 +1,12 @@
-const path = require('path');
-const qs = require('querystring');
-const fp = require('find-free-port');
-const fetch = require('node-fetch');
-const sleep = require('sleep-promise');
-const fs = require('fs-extra');
-const execa = require('execa');
-const Ajv = require('ajv');
+import path from 'path';
+import qs from 'querystring';
+import fp from 'find-free-port';
+import fetch from 'node-fetch';
+import sleep from 'sleep-promise';
+import fs from 'fs-extra';
+import execa from 'execa';
+import Ajv from 'ajv';
+import { getRandomInt, formatSchemaErrors } from './utils';
 
 const ajv = new Ajv({
   useDefaults: true,
@@ -21,18 +22,6 @@ const serverStates = Object.freeze({
   STOPPING: 'STOPPING',
 });
 
-/**
- * Returns a random integer between min (inclusive) and max (inclusive)
- * Using Math.round() will give you a non-uniform distribution!
- * @param {int} min - Lowest number
- * @param {int} max - Highest number
- * @returns {int} - A random number between the two
- * @todo Move to utils
- */
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 class TwigRenderer {
   constructor(userConfig) {
     this.serverState = serverStates.STOPPED;
@@ -42,11 +31,13 @@ class TwigRenderer {
     this.config = Object.assign({}, userConfig);
     const isValid = validateSchemaAndAssignDefaults(this.config);
     if (!isValid) {
-      // @todo Improve error message
-      const msg = 'Error: config schema is not valid. Please check config.schema.json. Sorry for vague error.';
+      const { errors } = validateSchemaAndAssignDefaults;
+      const msg = 'Error: Please check config passed into TwigRenderer.';
       console.error(msg);
-      throw new Error(msg);
+      console.error(formatSchemaErrors(errors));
+      process.exit(1);
     }
+
     if (this.config.src.namespaces) {
       // @todo Validate that all namespace paths exist
     }
