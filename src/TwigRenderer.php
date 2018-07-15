@@ -34,7 +34,7 @@ class TwigRenderer {
         $file = $alter['file'];
         require_once $file;
         foreach ($alter['functions'] as $function) {
-          $function($this->twig);
+          $function($this->twig, $config);
         }
       }
     }
