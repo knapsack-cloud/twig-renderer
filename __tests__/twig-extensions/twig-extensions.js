@@ -19,6 +19,4 @@ describe('Twig Extensions', () => {
     expect(results.ok).toEqual(true);
     expect(results).toMatchSnapshot();
   });
-
-  afterAll(() => twigRenderer.closeServer());
 });

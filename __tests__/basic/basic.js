@@ -35,6 +35,4 @@ describe('basic', () => {
 
     expect(actual.trim()).toEqual(expected.trim());
   });
-
-  afterAll(() => twigRenderer.closeServer());
 });

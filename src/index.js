@@ -37,6 +37,8 @@ class TwigRenderer {
   constructor(userConfig) {
     this.serverState = serverStates.STOPPED;
     this.inProgressRequests = 0;
+    this.totalRequests = 0;
+    this.completedRequests = 0;
     this.config = Object.assign({}, userConfig);
     const isValid = validateSchemaAndAssignDefaults(this.config);
     if (!isValid) {
@@ -149,6 +151,7 @@ class TwigRenderer {
   }
 
   async render(templatePath, data = {}) {
+    this.totalRequests += 1;
     if (this.serverState === serverStates.STOPPED) {
       await this.init();
     }
@@ -220,6 +223,11 @@ class TwigRenderer {
       }
     }
     this.inProgressRequests -= 1;
+    this.completedRequests += 1;
+    if (this.completedRequests === this.totalRequests) {
+      // @todo wait 100ms and double check that we're actually done first
+      this.closeServer();
+    }
     return results;
   }
 }

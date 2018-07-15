@@ -39,6 +39,4 @@ describe('Namespaces', () => {
 
     expect(expected.trim()).toEqual(actual.trim());
   });
-
-  afterAll(() => twigRenderer.closeServer());
 });
