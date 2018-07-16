@@ -1,10 +1,8 @@
 import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
-import clear from 'rollup-plugin-clear';
 import filesize from 'rollup-plugin-filesize';
 import resolve from 'rollup-plugin-node-resolve';
 import json from 'rollup-plugin-json';
-import copy from 'rollup-plugin-copy-assets';
 
 const pkg = require('./package.json');
 
@@ -23,13 +21,6 @@ const config = {
     },
   ],
   plugins: [
-    copy({
-      assets: [
-        './src/server--async.php',
-        './src/server--sync.php',
-        './src/TwigRenderer.php',
-      ],
-    }),
     resolve({
       extensions: ['.mjs', '.js', '.json'],
       only: [/config\.schema/],
@@ -40,9 +31,6 @@ const config = {
       exclude: 'node_modules/**',
     }),
     filesize(),
-    clear({
-      targets: ['./dist'],
-    }),
   ],
   external: [
     'path',
