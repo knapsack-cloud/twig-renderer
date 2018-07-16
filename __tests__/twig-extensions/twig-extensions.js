@@ -1,14 +1,13 @@
-const path = require('path');
-
 const TwigRenderer = require('../../');
 
 describe('Twig Extensions', () => {
   const twigRenderer = new TwigRenderer({
+    relativeFrom: __dirname,
     src: {
-      roots: [path.join(__dirname, 'src')],
+      roots: ['src'],
     },
     alterTwigEnv: [{
-      file: path.join(__dirname, 'alter-twig.php'),
+      file: 'alter-twig.php',
       functions: ['addCustomExtension'],
     }],
   });

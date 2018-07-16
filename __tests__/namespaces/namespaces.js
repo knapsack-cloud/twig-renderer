@@ -5,15 +5,17 @@ const TwigRenderer = require('../../');
 
 describe('Namespaces', () => {
   const twigRenderer = new TwigRenderer({
+    relativeFrom: __dirname,
     src: {
-      roots: [path.join(__dirname, 'src')],
+      roots: ['src'],
       namespaces: [
         {
           id: 'atoms',
-          paths: [path.join(__dirname, 'atoms')],
+          paths: ['atoms'],
         },
         {
           id: 'molecules',
+          recursive: true,
           paths: [path.join(__dirname, 'molecules')],
         },
       ],

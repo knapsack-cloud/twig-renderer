@@ -43,12 +43,8 @@ try {
 $loop = Factory::create();
 
 if ($config) {
-  try {
-    $twigRenderer = new TwigRenderer($config);
-  } catch (\Exception $e) {
-    $msg = 'Error creating Twig Environment. ' . $e->getMessage();
-    throw \Exception($msg);
-  }
+  $twigRenderer = new TwigRenderer($config);
+//  file_put_contents(__DIR__ . '/info.json', json_encode($twigRenderer->getInfo()));
 }
 
 function formatResponseBody($msgs = [], $ok = false, $html = '') {

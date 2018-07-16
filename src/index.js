@@ -6,12 +6,12 @@ import sleep from 'sleep-promise';
 import fs from 'fs-extra';
 import execa from 'execa';
 import Ajv from 'ajv';
-import { getRandomInt, formatSchemaErrors } from './utils';
+import { getRandomInt, formatSchemaErrors, getAllFolders } from './utils';
+import configSchema from '../config.schema';
 
 const ajv = new Ajv({
   useDefaults: true,
 });
-const configSchema = require('../config.schema');
 
 const validateSchemaAndAssignDefaults = ajv.compile(configSchema);
 
@@ -32,15 +32,77 @@ class TwigRenderer {
     const isValid = validateSchemaAndAssignDefaults(this.config);
     if (!isValid) {
       const { errors } = validateSchemaAndAssignDefaults;
-      const msg = 'Error: Please check config passed into TwigRenderer.';
-      console.error(msg);
-      console.error(formatSchemaErrors(errors));
-      process.exit(1);
+      const msgs = ['Error: Please check config passed into TwigRenderer.', formatSchemaErrors(errors)].join('\n');
+      console.error(msgs);
+      process.exitCode = 1;
+      throw new Error(msgs);
     }
 
-    if (this.config.src.namespaces) {
-      // @todo Validate that all namespace paths exist
+    if (this.config.relativeFrom) {
+      if (!fs.existsSync(this.config.relativeFrom)) {
+        const msg = `Uh oh, that file path does not exist: ${this.config.relativeFrom}`;
+        console.error(msg);
+        process.exitCode = 1;
+        throw new Error(msg);
+      }
+      this.config.relativeFrom = path.resolve(process.cwd(), this.config.relativeFrom);
+    } else {
+      this.config.relativeFrom = process.cwd();
     }
+
+    if (this.config.alterTwigEnv) {
+      this.config.alterTwigEnv = this.config.alterTwigEnv.map((item) => {
+        const isAbsolute = path.isAbsolute(item.file);
+        return {
+          file: isAbsolute ? item.file : path.resolve(this.config.relativeFrom, item.file),
+          functions: item.functions,
+        };
+      });
+    }
+
+    this.config = TwigRenderer.processPaths(this.config);
+  }
+
+  /**
+   * @param {object} config - this.config
+   * @returns {object} - config with checked and modified paths
+   */
+  static processPaths(config) {
+    function checkPaths(paths, { relativeFrom, recursive = false }) {
+      const thePaths = paths.map((thePath) => {
+        const fullPath = path.resolve(relativeFrom, thePath);
+        const relPath = path.relative(relativeFrom, fullPath);
+        if (!fs.existsSync(fullPath)) {
+          const msg = `This file path does not exist, but was used in config: ${thePath}`;
+          console.error(msg);
+          process.exitCode = 1;
+          throw new Error(msg);
+        }
+        return recursive ? getAllFolders(fullPath, relativeFrom) : relPath;
+      });
+      // Flattening arrays in case `recursive` was set
+      return [].concat(...thePaths);
+    }
+
+    const processedConfig = Object.assign({}, config);
+    const { relativeFrom } = processedConfig;
+    let { roots, namespaces } = processedConfig.src;
+
+    roots = checkPaths(roots, { relativeFrom });
+    if (namespaces) {
+      namespaces = namespaces.map(namespace => ({
+        id: namespace.id,
+        paths: checkPaths(namespace.paths, { relativeFrom, recursive: namespace.recursive }),
+      }));
+    }
+
+    processedConfig.relativeFrom = relativeFrom;
+    processedConfig.src.roots = roots;
+    if (namespaces) {
+      processedConfig.src.namespaces = namespaces;
+    }
+
+    return processedConfig;
   }
 
   async init() {

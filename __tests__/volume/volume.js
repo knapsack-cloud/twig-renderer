@@ -5,6 +5,7 @@ const TwigRenderer = require('../../');
 
 describe('volume', () => {
   const twigRenderer = new TwigRenderer({
+    relativeFrom: __dirname,
     src: {
       roots: [
         path.join(__dirname, 'src'),

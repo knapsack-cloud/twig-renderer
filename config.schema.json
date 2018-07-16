@@ -28,6 +28,11 @@
                 "type": "string",
                 "description": "Machine Name of Namespace; will use as `@id/file.twig`."
               },
+              "recursive": {
+                "type": "boolean",
+                "default": false,
+                "description": "If set, will expand all paths to include all sub-directories."
+              },
               "paths": {
                 "type": "array",
                 "description": "Paths to directories to look for twig files in under this Namespace.",
@@ -39,6 +44,10 @@
           }
         }
       }
+    },
+    "relativeFrom": {
+      "type": "string",
+      "description": "Path to directory that all paths in this config are relative from. Defaults to CWD."
     },
     "alterTwigEnv": {
       "type": "array",
