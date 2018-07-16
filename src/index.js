@@ -1,16 +1,17 @@
-const path = require('path');
-const qs = require('querystring');
-const fp = require('find-free-port');
-const fetch = require('node-fetch');
-const sleep = require('sleep-promise');
-const fs = require('fs-extra');
-const execa = require('execa');
-const Ajv = require('ajv');
+import path from 'path';
+import qs from 'querystring';
+import fp from 'find-free-port';
+import fetch from 'node-fetch';
+import sleep from 'sleep-promise';
+import fs from 'fs-extra';
+import execa from 'execa';
+import Ajv from 'ajv';
+import { getRandomInt, formatSchemaErrors, getAllFolders } from './utils';
+import configSchema from '../config.schema';
 
 const ajv = new Ajv({
   useDefaults: true,
 });
-const configSchema = require('../config.schema');
 
 const validateSchemaAndAssignDefaults = ajv.compile(configSchema);
 
@@ -21,33 +22,87 @@ const serverStates = Object.freeze({
   STOPPING: 'STOPPING',
 });
 
-/**
- * Returns a random integer between min (inclusive) and max (inclusive)
- * Using Math.round() will give you a non-uniform distribution!
- * @param {int} min - Lowest number
- * @param {int} max - Highest number
- * @returns {int} - A random number between the two
- * @todo Move to utils
- */
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 class TwigRenderer {
   constructor(userConfig) {
     this.serverState = serverStates.STOPPED;
     this.inProgressRequests = 0;
+    this.totalRequests = 0;
+    this.completedRequests = 0;
     this.config = Object.assign({}, userConfig);
     const isValid = validateSchemaAndAssignDefaults(this.config);
     if (!isValid) {
-      // @todo Improve error message
-      const msg = 'Error: config schema is not valid. Please check config.schema.json. Sorry for vague error.';
-      console.error(msg);
-      throw new Error(msg);
+      const { errors } = validateSchemaAndAssignDefaults;
+      const msgs = ['Error: Please check config passed into TwigRenderer.', formatSchemaErrors(errors)].join('\n');
+      console.error(msgs);
+      process.exitCode = 1;
+      throw new Error(msgs);
     }
-    if (this.config.src.namespaces) {
-      // @todo Validate that all namespace paths exist
+
+    if (this.config.relativeFrom) {
+      if (!fs.existsSync(this.config.relativeFrom)) {
+        const msg = `Uh oh, that file path does not exist: ${this.config.relativeFrom}`;
+        console.error(msg);
+        process.exitCode = 1;
+        throw new Error(msg);
+      }
+      this.config.relativeFrom = path.resolve(process.cwd(), this.config.relativeFrom);
+    } else {
+      this.config.relativeFrom = process.cwd();
     }
+
+    if (this.config.alterTwigEnv) {
+      this.config.alterTwigEnv = this.config.alterTwigEnv.map((item) => {
+        const isAbsolute = path.isAbsolute(item.file);
+        return {
+          file: isAbsolute ? item.file : path.resolve(this.config.relativeFrom, item.file),
+          functions: item.functions,
+        };
+      });
+    }
+
+    this.config = TwigRenderer.processPaths(this.config);
+  }
+
+  /**
+   * @param {object} config - this.config
+   * @returns {object} - config with checked and modified paths
+   */
+  static processPaths(config) {
+    function checkPaths(paths, { relativeFrom, recursive = false }) {
+      const thePaths = paths.map((thePath) => {
+        const fullPath = path.resolve(relativeFrom, thePath);
+        const relPath = path.relative(relativeFrom, fullPath);
+        if (!fs.existsSync(fullPath)) {
+          const msg = `This file path does not exist, but was used in config: ${thePath}`;
+          console.error(msg);
+          process.exitCode = 1;
+          throw new Error(msg);
+        }
+        return recursive ? getAllFolders(fullPath, relativeFrom) : relPath;
+      });
+      // Flattening arrays in case `recursive` was set
+      return [].concat(...thePaths);
+    }
+
+    const processedConfig = Object.assign({}, config);
+    const { relativeFrom } = processedConfig;
+    let { roots, namespaces } = processedConfig.src;
+
+    roots = checkPaths(roots, { relativeFrom });
+    if (namespaces) {
+      namespaces = namespaces.map(namespace => ({
+        id: namespace.id,
+        paths: checkPaths(namespace.paths, { relativeFrom, recursive: namespace.recursive }),
+      }));
+    }
+
+    processedConfig.relativeFrom = relativeFrom;
+    processedConfig.src.roots = roots;
+    if (namespaces) {
+      processedConfig.src.namespaces = namespaces;
+    }
+
+    return processedConfig;
   }
 
   async init() {
@@ -149,6 +204,7 @@ class TwigRenderer {
   }
 
   async render(templatePath, data = {}) {
+    this.totalRequests += 1;
     if (this.serverState === serverStates.STOPPED) {
       await this.init();
     }
@@ -220,6 +276,11 @@ class TwigRenderer {
       }
     }
     this.inProgressRequests -= 1;
+    this.completedRequests += 1;
+    if (this.completedRequests === this.totalRequests) {
+      // @todo wait 100ms and double check that we're actually done first
+      this.closeServer();
+    }
     return results;
   }
 }

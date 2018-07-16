@@ -5,6 +5,7 @@ const TwigRenderer = require('../../');
 
 describe('volume', () => {
   const twigRenderer = new TwigRenderer({
+    relativeFrom: __dirname,
     src: {
       roots: [
         path.join(__dirname, 'src'),
@@ -38,6 +39,4 @@ describe('volume', () => {
     expect(results).toMatchSnapshot();
     expect(results.filter(result => !result.ok)).toEqual([]);
   }, 15000);
-
-  afterAll(() => twigRenderer.closeServer());
 });

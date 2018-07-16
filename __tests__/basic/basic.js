@@ -5,10 +5,11 @@ const TwigRenderer = require('../../');
 
 describe('basic', () => {
   const twigRenderer = new TwigRenderer({
+    relativeFrom: __dirname,
     src: {
       roots: [
-        path.join(__dirname, 'src'),
-        path.join(__dirname, 'src2'),
+        'src',
+        'src2',
       ],
     },
     autoescape: false,
@@ -35,6 +36,4 @@ describe('basic', () => {
 
     expect(actual.trim()).toEqual(expected.trim());
   });
-
-  afterAll(() => twigRenderer.closeServer());
 });

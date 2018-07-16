@@ -8,19 +8,28 @@ class TwigRenderer {
    */
   private $twig;
 
+  /**
+   * @var $loader \Twig_Loader_Filesystem
+   */
+  private $loader;
+
   function __construct($config) {
-    $loader = new \Twig_Loader_Filesystem($config['src']['roots']);
+    $rootPath = getcwd();
+    if (isset($config['relativeFrom'])) {
+      $rootPath = $config['relativeFrom'];
+    }
+    $this->loader = new \Twig_Loader_Filesystem($config['src']['roots'], $rootPath);
 
     if (isset($config['src']['namespaces'])) {
       foreach ($config['src']['namespaces'] as $namespace) {
         foreach ($namespace['paths'] as $path) {
-          $loader->addPath($path, $namespace['id']);
+          $this->loader->addPath($path, $namespace['id']);
         }
       }
     }
 
     $loaders = new \Twig_Loader_Chain([
-      $loader,
+      $this->loader,
     ]);
 
     $this->twig = new \Twig_Environment($loaders, [
@@ -34,7 +43,7 @@ class TwigRenderer {
         $file = $alter['file'];
         require_once $file;
         foreach ($alter['functions'] as $function) {
-          $function($this->twig);
+          $function($this->twig, $config);
         }
       }
     }
@@ -62,5 +71,18 @@ class TwigRenderer {
    */
   public function getTwig() {
     return $this->twig;
+  }
+
+  public function getInfo() {
+    $info = [
+      'namespaces' => $this->loader->getNamespaces(),
+      'src' => array_map(function ($x) {
+        return [
+          'namespace' => $x,
+          'paths' => $this->loader->getPaths($x),
+        ];
+      }, $this->loader->getNamespaces()),
+    ];
+    return $info;
   }
 }
