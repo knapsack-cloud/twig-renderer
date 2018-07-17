@@ -34,7 +34,11 @@ class TwigRenderer {
       const { errors } = validateSchemaAndAssignDefaults;
       const msgs = ['Error: Please check config passed into TwigRenderer.', formatSchemaErrors(errors)].join('\n');
       console.error(msgs);
-      process.exitCode = 1;
+      if (process.env.NODE_ENV === 'testing') {
+        process.exitCode = 1;
+      } else {
+        process.exit(1);
+      }
       throw new Error(msgs);
     }
 
