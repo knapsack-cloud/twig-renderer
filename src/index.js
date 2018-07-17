@@ -278,8 +278,11 @@ class TwigRenderer {
     this.inProgressRequests -= 1;
     this.completedRequests += 1;
     if (this.completedRequests === this.totalRequests) {
-      // @todo wait 100ms and double check that we're actually done first
-      this.closeServer();
+      setTimeout(() => {
+        if (this.completedRequests === this.totalRequests) {
+          this.closeServer();
+        }
+      }, 300);
     }
     return results;
   }
