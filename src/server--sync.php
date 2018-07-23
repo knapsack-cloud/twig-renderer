@@ -23,7 +23,7 @@ $config = [];
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-$configFilePath = dirname(__FILE__) . '/shared-config--' . $_SERVER['SERVER_PORT'] . '.json';
+$configFilePath = dirname(__FILE__) . '/shared-config.json';
 try {
   $configString = file_get_contents($configFilePath);
 } catch (\Exception $e) {
