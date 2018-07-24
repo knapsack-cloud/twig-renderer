@@ -65,6 +65,8 @@ class TwigRenderer {
     }
 
     this.config = TwigRenderer.processPaths(this.config);
+    // Writing this so `server--sync.php` can use
+    fs.writeFileSync(path.join(__dirname, 'shared-config.json'), JSON.stringify(this.config, null, '  '));
   }
 
   /**
@@ -130,8 +132,6 @@ class TwigRenderer {
     // @todo Pass config to PHP server a better way than writing JSON file, then reading in PHP
     const sharedConfigPath = path.join(__dirname, `shared-config--${port}.json`);
     await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
-    // Writing this a 2nd time (and not deleting later) so we can get it later @todo cleanup
-    await fs.writeFile(path.join(__dirname, 'shared-config.json'), JSON.stringify(this.config, null, '  '));
 
     this.phpServer = execa('php', [
       path.join(__dirname, 'server--async.php'),
