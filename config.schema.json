@@ -86,6 +86,12 @@
       "default": false,
       "description": "Should the terminal output a lot of info?"
     },
+    "keepAlive": {
+      "type": "boolean",
+      "default": false,
+      "title": "Keep render server alive?",
+      "description": "If false, spins up PHP render server for each batch of render calls. If true, requires deliberate calls to start and stop render server."
+    },
     "maxConcurrency": {
       "type": "integer",
       "default": 100,

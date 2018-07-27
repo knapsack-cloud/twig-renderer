@@ -283,12 +283,14 @@ class TwigRenderer {
     }
     this.inProgressRequests -= 1;
     this.completedRequests += 1;
-    if (this.completedRequests === this.totalRequests) {
-      setTimeout(() => {
-        if (this.completedRequests === this.totalRequests) {
-          this.closeServer();
-        }
-      }, 300);
+    if (!this.config.keepAlive) {
+      if (this.completedRequests === this.totalRequests) {
+        setTimeout(() => {
+          if (this.completedRequests === this.totalRequests) {
+            this.closeServer();
+          }
+        }, 300);
+      }
     }
     return results;
   }
