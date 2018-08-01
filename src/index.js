@@ -209,7 +209,37 @@ class TwigRenderer {
     return this.serverState;
   }
 
-  async render(templatePath, data = {}) {
+  /**
+   * Render Twig Template
+   * @param {string} template - Template path
+   * @param {object} data - Data to pass to template
+   * @returns {Promise<{ok: boolean, html: string, message: string}>} - Render results
+   */
+  async render(template, data = {}) {
+    return this.request('renderFile', {
+      template,
+      data,
+    });
+  }
+
+  /**
+   * Render Twig String
+   * @param {string} template - inlined Twig template
+   * @param {object} data - Data to pass to template
+   * @returns {Promise<{ok: boolean, html: string, message: string}>}  - Render results
+   */
+  async renderString(template, data = {}) {
+    return this.request('renderString', {
+      template,
+      data,
+    });
+  }
+
+  async getMeta() {
+    return this.request('meta');
+  }
+
+  async request(type, body = {}) {
     this.totalRequests += 1;
     if (this.serverState === serverStates.STOPPED) {
       await this.init();
@@ -235,7 +265,7 @@ class TwigRenderer {
     while (attempt < attempts) {
       try {
         const requestUrl = `${this.phpServerUrl}?${qs.stringify({
-          templatePath,
+          type,
         })}`;
 
         // @todo Fail if no response after X seconds
@@ -244,7 +274,7 @@ class TwigRenderer {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify(body),
         });
 
         const { status, headers, ok } = res;
@@ -263,7 +293,7 @@ class TwigRenderer {
 
         if (this.config.verbose) {
           // console.log('vvvvvvvvvvvvvvv');
-          console.log(`Render request received: Ok: ${ok ? 'true' : 'false'}, Status Code: ${status}, templatePath: ${templatePath}.`);
+          console.log(`Render request received: Ok: ${ok ? 'true' : 'false'}, Status Code: ${status}, type: ${type}. ${body.template ? `template: ${body.template}` : ''}`);
           if (warning) {
             console.warn('Warning: ', warning);
           }

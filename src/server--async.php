@@ -79,40 +79,60 @@ $server = new Server(function (ServerRequestInterface $request) use (
     return new Response(400, $headers, formatResponseBody($msgs));
   }
 
-  if (isset($query['templatePath'])) {
-    return new Promise(function ($resolve, $reject) use ($twigRenderer, $query, $body, $headers) {
-      $results = $twigRenderer->render($query['templatePath'], $body);
-      $response = new Response(
-        $results['ok'] ? 200 : 404,
-        $headers,
-        json_encode($results)
-      );
-      $resolve($response);
-    });
-  } elseif (isset($query['meta'])) {
-   return new Response(
-     200,
-     $headers,
-     json_encode([
-       'ok' => true,
-       'meta' => [
-         'counter' => $counter,
-         'query' => $query,
-         'body' => $body,
-         'method' => $method,
-       ]
-     ])
-   );
+  if (!isset($query['type'])) {
+    return new Response(
+      202,
+      $headers,
+      json_encode([
+        'ok' => true,
+        'message' => 'No action correctly requested. Url must have a query param of \'templatePath\' for which twig template to render, but yes - the server is running.',
+      ])
+    );
   }
+  // one of: meta, renderFile, renderString
+  $type = $query['type'];
 
-  return new Response(
-    202,
-    $headers,
-    json_encode([
-      'ok' => true,
-      'message' => 'No action correctly requested. Url must have a query param of \'templatePath\' for which twig template to render, but yes - the server is running.'
-    ])
-  );
+  switch ($type) {
+    case 'meta':
+      return new Response(
+        200,
+        $headers,
+        json_encode([
+          'ok' => true,
+          'meta' => [
+            'counter' => $counter,
+            'query' => $query,
+            'body' => $body,
+            'method' => $method,
+          ],
+        ])
+      );
+      break;
+
+    case 'renderFile':
+      return new Promise(function ($resolve, $reject) use ($twigRenderer, $query, $body, $headers) {
+        $results = $twigRenderer->render($body['template'], $body['data']);
+        $response = new Response(
+          $results['ok'] ? 200 : 404,
+          $headers,
+          json_encode($results)
+        );
+        $resolve($response);
+      });
+      break;
+
+    case 'renderString':
+      return new Promise(function ($resolve, $reject) use ($twigRenderer, $query, $body, $headers) {
+        $results = $twigRenderer->renderString($body['template'], $body['data']);
+        $response = new Response(
+          $results['ok'] ? 200 : 404,
+          $headers,
+          json_encode($results)
+        );
+        $resolve($response);
+      });
+      break;
+  }
 });
 
 $socket = new \React\Socket\Server($port, $loop);

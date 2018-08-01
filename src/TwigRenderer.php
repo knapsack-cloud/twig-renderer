@@ -13,15 +13,21 @@ class TwigRenderer {
    */
   private $loader;
 
-  function __construct($config) {
-    $rootPath = getcwd();
-    if (isset($config['relativeFrom'])) {
-      $rootPath = $config['relativeFrom'];
-    }
-    $this->loader = new \Twig_Loader_Filesystem($config['src']['roots'], $rootPath);
+  /**
+   * @var $config array - Configuration passed in
+   */
+  public $config;
 
-    if (isset($config['src']['namespaces'])) {
-      foreach ($config['src']['namespaces'] as $namespace) {
+  function __construct(array $config) {
+    $this->config = $config;
+    $rootPath = getcwd();
+    if (isset($this->config['relativeFrom'])) {
+      $rootPath = $this->config['relativeFrom'];
+    }
+    $this->loader = new \Twig_Loader_Filesystem($this->config['src']['roots'], $rootPath);
+
+    if (isset($this->config['src']['namespaces'])) {
+      foreach ($this->config['src']['namespaces'] as $namespace) {
         foreach ($namespace['paths'] as $path) {
           $this->loader->addPath($path, $namespace['id']);
         }
@@ -32,21 +38,55 @@ class TwigRenderer {
       $this->loader,
     ]);
 
-    $this->twig = new \Twig_Environment($loaders, [
-      'debug' => $config['debug'],
-      'autoescape' => $config['autoescape'],
+    $this->twig = $this->createTwigEnv($loaders);
+  }
+
+  private function createTwigEnv($loaders) {
+    $twig = new \Twig_Environment($loaders, [
+      'debug' => $this->config['debug'],
+      'autoescape' => $this->config['autoescape'],
       'cache' => false, // @todo Implement Twig caching
     ]);
 
-    if (isset($config['alterTwigEnv'])) {
-      foreach ($config['alterTwigEnv'] as $alter) {
+    if (isset($this->config['alterTwigEnv'])) {
+      foreach ($this->config['alterTwigEnv'] as $alter) {
         $file = $alter['file'];
         require_once $file;
         foreach ($alter['functions'] as $function) {
-          $function($this->twig, $config);
+          $function($twig, $this->config);
         }
       }
     }
+
+    return $twig;
+  }
+
+  public function renderString($templateString, $data = []) {
+    $templateName = 'StringRenderer'; // @todo ensure this simple name is ok; should be!
+    $loader = new \Twig_Loader_Array([
+      $templateName => $templateString,
+    ]);
+    
+    $loaders = new \Twig_Loader_Chain([
+      $loader,
+      $this->loader,
+    ]);
+    
+    $twig = $this->createTwigEnv($loaders);
+
+    try {
+      $html = $twig->render($templateName, $data);
+      $response = [
+        'ok' => true,
+        'html' => trim($html),
+      ];
+    } catch (\Exception $exception) {
+      $response = [
+        'ok' => false,
+        'message' => $exception->getMessage(),
+      ];
+    }
+    return $response;
   }
 
   public function render($templatePath, $data = []) {
