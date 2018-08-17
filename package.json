@@ -1,6 +1,6 @@
 {
   "name": "@basalt/twig-renderer",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "Render templates using Twig PHP, via this Node JS renderer.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
