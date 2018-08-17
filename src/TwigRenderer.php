@@ -14,6 +14,11 @@ class TwigRenderer {
   private $loader;
 
   /**
+   * @var $loaders \Twig_Loader_Chain
+   */
+  private $loaders;
+
+  /**
    * @var $config array - Configuration passed in
    */
   public $config;
@@ -34,11 +39,11 @@ class TwigRenderer {
       }
     }
 
-    $loaders = new \Twig_Loader_Chain([
+    $this->loaders = new \Twig_Loader_Chain([
       $this->loader,
     ]);
 
-    $this->twig = $this->createTwigEnv($loaders);
+    $this->twig = $this->createTwigEnv($this->loaders);
   }
 
   private function createTwigEnv($loaders) {
@@ -66,12 +71,12 @@ class TwigRenderer {
     $loader = new \Twig_Loader_Array([
       $templateName => $templateString,
     ]);
-    
+
     $loaders = new \Twig_Loader_Chain([
       $loader,
       $this->loader,
     ]);
-    
+
     $twig = $this->createTwigEnv($loaders);
 
     try {

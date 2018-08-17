@@ -143,6 +143,8 @@ $server->on('error', function (Exception $e) {
 
 $server->listen($socket);
 
-echo 'Listening on ' . str_replace('tcp:', 'http:', $socket->getAddress()) . PHP_EOL;
+if ($config['verbose']) {
+  echo 'PHP Twig Render Server listening on ' . str_replace('tcp:', 'http:', $socket->getAddress()) . PHP_EOL;
+}
 
 $loop->run();
