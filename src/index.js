@@ -326,4 +326,4 @@ class TwigRenderer {
   }
 }
 
-module.exports = TwigRenderer;
+export default TwigRenderer;
