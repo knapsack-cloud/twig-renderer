@@ -326,4 +326,19 @@ class TwigRenderer {
   }
 }
 
+/**
+ * Convert Legacy Namespaces Config
+ * The old format was an object with the keys being the namespace id and the value the config;
+ * the new format is an array of objects that are the exact same config,
+ * but the namespace id is the `id` property in the object.
+ * @param {object} namespaces - Namespaces config
+ * @return {object[]} - Format needed by `config.src.namespaces` (see `config.schema.json`)
+ */
+export function convertLegacyNamespacesConfig(namespaces) {
+  return Object.keys(namespaces).map((id) => {
+    const value = namespaces[id];
+    return Object.assign({ id }, value);
+  });
+}
+
 export default TwigRenderer;
