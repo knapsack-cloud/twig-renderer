@@ -7,7 +7,7 @@ import json from 'rollup-plugin-json';
 const pkg = require('./package.json');
 
 const config = {
-  input: './src/index.js',
+  input: './src/twig-renderer.js',
   output: [
     {
       file: pkg.main,
