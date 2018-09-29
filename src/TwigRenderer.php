@@ -108,6 +108,9 @@ class TwigRenderer {
         'message' => $exception->getMessage(),
       ];
     }
+    if ($this->config['hasExtraInfoInResponses']) {
+      $response['info'] = $this->getInfo();
+    }
     return $response;
   }
 

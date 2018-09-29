@@ -99,6 +99,7 @@ $server = new Server(function (ServerRequestInterface $request) use (
         $headers,
         json_encode([
           'ok' => true,
+          'info' => $twigRenderer->getInfo(),
           'meta' => [
             'counter' => $counter,
             'query' => $query,

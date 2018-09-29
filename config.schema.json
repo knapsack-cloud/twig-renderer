@@ -71,6 +71,11 @@
         }
       }
     },
+    "hasExtraInfoInResponses": {
+      "type": "boolean",
+      "default": false,
+      "description": "Should there be an 'info' key on the response object with extra debug details?"
+    },
     "autoescape": {
       "type": "boolean",
       "default": false,
