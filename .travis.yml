@@ -1,6 +1,6 @@
 language: php
 php:
-- 7.1
+- '7.1'
 
 before_install:
 - nvm install
@@ -11,6 +11,11 @@ install:
 
 script:
 - npm run test
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: npx semantic-release
 
 cache:
   directories:
