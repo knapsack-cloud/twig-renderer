@@ -9,7 +9,7 @@
     "start": "nodemon --ext .js,.php --watch src/ --watch config.schema.json --exec 'npm run build' ",
     "lint": "eslint .",
     "lint:fix": "npm run lint -- --fix",
-    "jest": "NODE_ENV=testing jest",
+    "jest": "NODE_ENV=testing jest --detectOpenHandles",
     "jest:watch": "npm run jest -- --watch",
     "test": "npm run lint && npm run jest",
     "precommit": "npm run lint:fix",
