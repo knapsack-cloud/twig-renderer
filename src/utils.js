@@ -47,6 +47,7 @@ export const isDir = thePath => fs.statSync(thePath).isDirectory();
 
 function getAllSubFolders(dir) {
   return fs.readdirSync(dir).reduce((files, file) => {
+    // if (file === 'node_modules') return [...files];
     const name = join(dir, file);
     return isDir(name) ? [...files, name, ...getAllSubFolders(name)] : [...files];
   }, []);

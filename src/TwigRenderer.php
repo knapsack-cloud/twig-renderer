@@ -88,7 +88,7 @@ class TwigRenderer {
     } catch (\Exception $exception) {
       $response = [
         'ok' => false,
-        'message' => $exception->getMessage(),
+        'message' => 'Error trying to render twig string. ' . $exception->getMessage(),
       ];
     }
     return $response;
@@ -105,7 +105,7 @@ class TwigRenderer {
     } catch (\Exception $exception) {
       $response = [
         'ok' => false,
-        'message' => $exception->getMessage(),
+        'message' => 'Error trying to render "' . $templatePath . '". ' . $exception->getMessage(),
       ];
     }
     if ($this->config['hasExtraInfoInResponses']) {
@@ -122,15 +122,26 @@ class TwigRenderer {
   }
 
   public function getInfo() {
-    $info = [
-      'namespaces' => $this->loader->getNamespaces(),
-      'src' => array_map(function ($x) {
-        return [
-          'namespace' => $x,
-          'paths' => $this->loader->getPaths($x),
-        ];
-      }, $this->loader->getNamespaces()),
-    ];
+    try {
+      $info = [
+        'namespaces' => $this->loader->getNamespaces(),
+        'src' => array_map(function ($x) {
+          return [
+            'namespace' => $x,
+            'paths' => $this->loader->getPaths($x),
+          ];
+        }, $this->loader->getNamespaces()),
+        'extensions' => array_map(function ($ext) {
+          return [
+            'name' => $ext->getName(),
+          ];
+        }, $this->twig->getExtensions()),
+      ];
+    } catch (\Exception $e) {
+      $info = [
+        'message' => 'Exception thrown trying to get info. ' . $e->getMessage(),
+      ];
+    }
     return $info;
   }
 }

@@ -139,7 +139,7 @@ $server = new Server(function (ServerRequestInterface $request) use (
 $socket = new \React\Socket\Server($port, $loop);
 
 $server->on('error', function (Exception $e) {
-  echo 'Error: ' . $e->getMessage() . PHP_EOL;
+  echo 'PHP TwigRenderer Error: ' . $e->getMessage() . PHP_EOL;
 });
 
 $server->listen($socket);
