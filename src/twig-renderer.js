@@ -23,6 +23,9 @@ const serverStates = Object.freeze({
 });
 
 class TwigRenderer {
+  /**
+   * @param {TwigRendererConfig} userConfig - User config
+   */
   constructor(userConfig) {
     this.serverState = serverStates.STOPPED;
     this.inProgressRequests = 0;
