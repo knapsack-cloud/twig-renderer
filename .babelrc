@@ -1,6 +1,6 @@
 {
   "presets": [
-    ["env", {
+    ["@babel/preset-env", {
       "modules": false,
       "targets": {
         "node": "8.9"
@@ -8,9 +8,16 @@
     }]
   ],
   "env": {
-    "testing": {
+    "test": {
+      "presets": [
+        ["@babel/preset-env", {
+          "targets": {
+            "node": "8.9"
+          }
+        }]
+      ],
       "plugins": [
-        "transform-es2015-modules-commonjs"
+        "@babel/plugin-transform-modules-commonjs"
       ]
     }
   }
