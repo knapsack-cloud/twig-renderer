@@ -70,6 +70,7 @@ class TwigRenderer {
     this.config = TwigRenderer.processPaths(this.config);
     // Writing this so `server--sync.php` can use
     fs.writeFileSync(path.join(__dirname, 'shared-config.json'), JSON.stringify(this.config, null, '  '));
+    console.log('config', this.config);
   }
 
   /**
@@ -188,6 +189,7 @@ class TwigRenderer {
   }
 
   closeServer() {
+    console.log('closeServer');
     this.phpServer.kill();
   }
 
