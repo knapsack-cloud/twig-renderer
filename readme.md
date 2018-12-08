@@ -1,5 +1,7 @@
 # Twig Renderer
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/basaltinc/twig-renderer.svg)](https://greenkeeper.io/)
+
 > Render templates using Twig PHP, via this Node JS renderer.
 
 *Special thanks to [Salem Ghoweri](https://twitter.com/salem_ghoweri) for collaboration on this project!*
