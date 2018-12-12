@@ -8,14 +8,29 @@
 
 # How to Use
 
-**Currently in early beta - highly undocumented; use at your own risk. API will change often.**
-
 ```bash
 npm install --save @basalt/twig-renderer
 ```
 
-- Pour over code base to try and figure out how it all works.
-- Looking in tests folder is a good start.
+```
+const TwigRenderer = require('@basalt/twig-renderer');
+
+const config = { 
+  // see `./config.schema.js` for details
+};
+
+const twigRenderer = new TwigRenderer(config);
+
+twigRenderer.render('@components/card.twig', { title: 'hi' }).then(results => {
+  if (results.ok) {
+    console.log(results.html);
+  } else {
+    console.log(results.message);
+  }
+});
+```
+
+Looking in tests folder can help.
 
 # How to Develop
 
