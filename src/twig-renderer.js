@@ -27,6 +27,12 @@ class TwigRenderer {
    * @param {TwigRendererConfig} userConfig - User config
    */
   constructor(userConfig) {
+    try {
+      execa.shellSync('php --version');
+    } catch (err) {
+      console.error('Error: php cli required. ', err.message);
+      process.exit(1);
+    }
     this.serverState = serverStates.STOPPED;
     this.inProgressRequests = 0;
     this.totalRequests = 0;
