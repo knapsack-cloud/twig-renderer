@@ -82,5 +82,8 @@
   "bugs": {
     "url": "https://github.com/basaltinc/twig-renderer/issues"
   },
-  "homepage": "https://github.com/basaltinc/twig-renderer#readme"
+  "homepage": "https://github.com/basaltinc/twig-renderer#readme",
+  "publishConfig": {
+    "access": "public"
+  }
 }
