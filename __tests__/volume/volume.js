@@ -3,8 +3,6 @@ const fs = require('fs-extra');
 
 const TwigRenderer = require('../../');
 
-jest.setTimeout(60000);
-
 describe('volume', () => {
   const twigRenderer = new TwigRenderer({
     relativeFrom: __dirname,
@@ -40,5 +38,5 @@ describe('volume', () => {
 
     expect(results).toMatchSnapshot();
     expect(results.filter(result => !result.ok)).toEqual([]);
-  }, 15000);
+  }, 120000);
 });
