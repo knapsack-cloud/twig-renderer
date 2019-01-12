@@ -189,7 +189,7 @@ class TwigRenderer {
     if (this.config.verbose) {
       // console.log(`TwigRender js init complete. PHP server started on port ${port}`);
     }
-    this.checkServerWhileStarting();
+    await this.checkServerWhileStarting();
     return this.serverState;
   }
 
