@@ -245,12 +245,14 @@ class TwigRenderer {
       data,
     });
 
-    if (!this.config.keepAlive) {
+    if (this.config.keepAlive === false) {
       if (this.completedRequests <= this.totalRequests) {
         setTimeout(() => {
           if (this.completedRequests >= this.totalRequests) {
             console.log('done!');
             this.closeServer();
+          } else {
+            console.log('waiting to finish...!');
           }
         }, 300);
       } else {
@@ -281,6 +283,8 @@ class TwigRenderer {
           if (this.completedRequests >= this.totalRequests) {
             console.log('done!');
             this.closeServer();
+          } else {
+            console.log('waiting to finish...!');
           }
         }, 300);
       } else {
@@ -372,7 +376,6 @@ class TwigRenderer {
         this.inProgressRequests -= 1;
       }
     }
-    console.log(!this.config.keepAlive);
     return results;
   }
 }
