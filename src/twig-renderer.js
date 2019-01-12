@@ -338,13 +338,13 @@ class TwigRenderer {
     this.inProgressRequests -= 1;
     this.completedRequests += 1;
     console.log('vvvvvvvvvvvvvvv');
-    console.log('current config:')
+    console.log('current config:');
     console.log(this.config);
     console.log();
-    console.log('in-progress requests')
+    console.log('in-progress requests');
     console.log(this.inProgressRequests);
     console.log();
-    console.log('completed requests')
+    console.log('completed requests');
     console.log(this.completedRequests);
     console.log('^^^^^^^^^^^^^^^^');
     console.log();
