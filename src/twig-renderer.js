@@ -244,7 +244,7 @@ class TwigRenderer {
       template,
       data,
     });
-    
+
     if (!this.config.keepAlive) {
       if (this.completedRequests <= this.totalRequests) {
         setTimeout(() => {
@@ -274,7 +274,7 @@ class TwigRenderer {
       template,
       data,
     });
-    
+
     if (!this.config.keepAlive) {
       if (this.completedRequests <= this.totalRequests) {
         setTimeout(() => {
