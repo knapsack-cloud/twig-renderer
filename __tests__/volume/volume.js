@@ -20,7 +20,7 @@ describe('volume', () => {
 
     const renders = [];
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 100; i++) {
       renders.push(new Promise(async (resolve) => {
         const result = await twigRenderer.render(`item-${i}.twig`);
 
