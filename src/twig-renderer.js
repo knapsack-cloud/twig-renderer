@@ -240,10 +240,27 @@ class TwigRenderer {
    * @returns {Promise<{ok: boolean, html: string, message: string}>} - Render results
    */
   async render(template, data = {}) {
-    return this.request('renderFile', {
+    const result = await this.request('renderFile', {
       template,
       data,
     });
+    
+    if (!this.config.keepAlive) {
+      if (this.completedRequests <= this.totalRequests) {
+        setTimeout(() => {
+          if (this.completedRequests >= this.totalRequests) {
+            console.log('done!');
+            this.closeServer();
+          }
+        }, 300);
+      } else {
+        console.log('complete!');
+        this.closeServer();
+      }
+    } else {
+      console.log('keep alive!');
+    }
+    return result;
   }
 
   /**
@@ -253,10 +270,27 @@ class TwigRenderer {
    * @returns {Promise<{ok: boolean, html: string, message: string}>}  - Render results
    */
   async renderString(template, data = {}) {
-    return this.request('renderString', {
+    const result = await this.request('renderString', {
       template,
       data,
     });
+    
+    if (!this.config.keepAlive) {
+      if (this.completedRequests <= this.totalRequests) {
+        setTimeout(() => {
+          if (this.completedRequests >= this.totalRequests) {
+            console.log('done!');
+            this.closeServer();
+          }
+        }, 300);
+      } else {
+        console.log('complete!');
+        this.closeServer();
+      }
+    } else {
+      console.log('keep alive!');
+    }
+    return result;
   }
 
   async getMeta() {
@@ -338,27 +372,7 @@ class TwigRenderer {
         this.inProgressRequests -= 1;
       }
     }
-    console.log();
-    console.log('in-progress:');
-    console.log(this.inProgressRequests);
-    console.log();
-    console.log('completed:');
-    console.log(this.completedRequests);
-    console.log();
-    console.log('total:');
-    console.log(this.totalRequests);
-    console.log();
-    if (!this.config.keepAlive) {
-      if (this.completedRequests <= this.totalRequests) {
-        setTimeout(() => {
-          if (this.completedRequests >= this.totalRequests) {
-            this.closeServer();
-          }
-        }, 300);
-      } else {
-        this.closeServer();
-      }
-    }
+    console.log(!this.config.keepAlive);
     return results;
   }
 }
