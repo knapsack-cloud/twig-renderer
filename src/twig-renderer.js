@@ -338,9 +338,16 @@ class TwigRenderer {
         this.inProgressRequests -= 1;
       }
     }
-    console.log('in-progress: ' + this.inProgressRequests);
-    console.log('completed: ' + this.completedRequests);
-    console.log('total: ' + this.totalRequests);
+    console.log();
+    console.log('in-progress:');
+    console.log(this.inProgressRequests);
+    console.log();
+    console.log('completed:');
+    console.log(this.completedRequests);
+    console.log();
+    console.log('total:');
+    console.log(this.totalRequests);
+    console.log();
     if (!this.config.keepAlive) {
       if (this.completedRequests <= this.totalRequests) {
         setTimeout(() => {
