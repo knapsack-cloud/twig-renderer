@@ -281,13 +281,13 @@ class TwigRenderer {
       console.log(`About to render & server on port ${this.phpServerPort} is ${this.serverState}`);
     }
 
-    this.inProgressRequests += 1;
     const attempts = 3;
     let attempt = 0;
     let results;
 
     while (attempt < attempts) {
       try {
+        this.inProgressRequests += 1;
         const requestUrl = `${this.phpServerUrl}?${qs.stringify({
           type,
         })}`;
@@ -314,6 +314,8 @@ class TwigRenderer {
             html: await res.text(), // eslint-disable-line no-await-in-loop
           };
         }
+        this.inProgressRequests -= 1;
+        this.completedRequests += 1;
 
         if (this.config.verbose) {
           // console.log('vvvvvvvvvvvvvvv');
@@ -333,10 +335,12 @@ class TwigRenderer {
           message: e.message,
         };
         attempt += 1;
+        this.inProgressRequests -= 1;
       }
     }
-    this.inProgressRequests -= 1;
-    this.completedRequests += 1;
+    console.log('in-progress: ' + this.inProgressRequests);
+    console.log('completed: ' + this.completedRequests);
+    console.log('total: ' + this.totalRequests);
     if (!this.config.keepAlive) {
       if (this.completedRequests <= this.totalRequests) {
         setTimeout(() => {
