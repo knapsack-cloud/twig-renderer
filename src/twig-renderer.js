@@ -157,20 +157,20 @@ class TwigRenderer {
     const sharedConfigPath = path.join(__dirname, `shared-config--${port}.json`);
     await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
 
-    this.phpServer = execa('php', [
+    this.phpServer = await execa('php', [
       path.join(__dirname, 'server--async.php'),
       port,
       sharedConfigPath,
     ]);
 
     this.phpServer.on('close', async () => {
-      // console.log(`Server ${this.phpServerPort} event: 'close'`);
+      console.log(`Server ${this.phpServerPort} event: 'close'`);
       await fs.unlink(sharedConfigPath);
       this.serverState = serverStates.STOPPED;
     });
 
     this.phpServer.on('exit', () => {
-      // console.log(`Server ${this.phpServerPort} event: 'exit'`);
+      console.log(`Server ${this.phpServerPort} event: 'exit'`);
       this.serverState = serverStates.STOPPING;
     });
 
@@ -254,7 +254,7 @@ class TwigRenderer {
             console.log('done!');
             self.closeServer();
           } else {
-            console.log('waiting to finish...!');
+            // console.log('waiting to finish...!');
           }
         }, 300);
       } else {
@@ -286,7 +286,7 @@ class TwigRenderer {
             console.log('done!');
             this.closeServer();
           } else {
-            console.log('waiting to finish...!');
+            // console.log('waiting to finish...!');
           }
         }, 300);
       } else {
