@@ -20,6 +20,7 @@ const serverStates = Object.freeze({
   STARTING: 'STARTING',
   READY: 'READY',
   STOPPING: 'STOPPING',
+  RESTARTING: 'RESTARTING',
 });
 
 class TwigRenderer {
@@ -33,6 +34,7 @@ class TwigRenderer {
       console.error('Error: php cli required. ', err.message);
       process.exit(1);
     }
+
     this.serverState = serverStates.STOPPED;
     this.inProgressRequests = 0;
     this.totalRequests = 0;
@@ -141,6 +143,12 @@ class TwigRenderer {
       return this.serverState;
     }
 
+    if (this.serverState === serverStates.STOPPING) {
+      console.log('Server currently stopping -- trying to restart.');
+      this.serverState = serverStates.READY;
+      return this.serverState;
+    }
+
     if (this.config.verbose) {
       // console.log('Initializing PHP Server...');
     }
@@ -157,21 +165,26 @@ class TwigRenderer {
     const sharedConfigPath = path.join(__dirname, `shared-config--${port}.json`);
     await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
 
-    this.phpServer = await execa('php', [
+    const params = [
       path.join(__dirname, 'server--async.php'),
       port,
       sharedConfigPath,
-    ]);
+    ];
+
+    this.phpServer = execa('php', params, {
+      cleanup: true,
+      detached: false,
+    });
 
     this.phpServer.on('close', async () => {
       console.log(`Server ${this.phpServerPort} event: 'close'`);
-      await fs.unlink(sharedConfigPath);
-      this.serverState = serverStates.STOPPED;
+      this.serverState = serverStates.STOPPING;
     });
 
-    this.phpServer.on('exit', () => {
+    this.phpServer.on('exit', async () => {
       console.log(`Server ${this.phpServerPort} event: 'exit'`);
-      this.serverState = serverStates.STOPPING;
+      await fs.unlink(sharedConfigPath);
+      this.serverState = serverStates.STOPPED;
     });
 
     this.phpServer.on('disconnect', () => {
@@ -193,9 +206,32 @@ class TwigRenderer {
     return this.serverState;
   }
 
-  closeServer() {
+  stop() {
+    // console.log(`stopping server with port ${this.phpServerPort}`);
+    this.serverState = serverStates.STOPPED;
     this.phpServer.kill();
-    // process.exit(0);
+    this.phpServer.removeAllListeners();
+  }
+
+  async closeServer() {
+    // console.log('checking if we can stop the server...');
+    if (this.config.keepAlive === false) {
+      if (this.completedRequests === this.totalRequests
+        && this.inProgressRequests === 0
+        && (
+          this.serverState !== serverStates.STOPPING
+          || this.serverState !== serverStates.STOPPED
+        )
+      ) {
+        this.stop();
+      } else {
+        setTimeout(() => {
+          if (this.completedRequests === this.totalRequests && this.inProgressRequests === 0) {
+            this.stop();
+          }
+        }, 300);
+      }
+    }
   }
 
   /**
@@ -241,29 +277,11 @@ class TwigRenderer {
    * @returns {Promise<{ok: boolean, html: string, message: string}>} - Render results
    */
   async render(template, data = {}) {
-    const self = this;
     const result = await this.request('renderFile', {
       template,
       data,
     });
-
-    if (this.config.keepAlive === false) {
-      if (this.completedRequests <= this.totalRequests) {
-        setTimeout(() => {
-          if (this.completedRequests === this.totalRequests) {
-            console.log('done!');
-            self.closeServer();
-          } else {
-            // console.log('waiting to finish...!');
-          }
-        }, 300);
-      } else {
-        console.log('complete!');
-        self.closeServer();
-      }
-    } else {
-      console.log('keep alive!');
-    }
+    this.closeServer();
     return result;
   }
 
@@ -278,24 +296,7 @@ class TwigRenderer {
       template,
       data,
     });
-
-    if (!this.config.keepAlive) {
-      if (this.completedRequests <= this.totalRequests) {
-        setTimeout(() => {
-          if (this.completedRequests >= this.totalRequests) {
-            console.log('done!');
-            this.closeServer();
-          } else {
-            // console.log('waiting to finish...!');
-          }
-        }, 300);
-      } else {
-        console.log('complete!');
-        this.closeServer();
-      }
-    } else {
-      console.log('keep alive!');
-    }
+    this.closeServer();
     return result;
   }
 
