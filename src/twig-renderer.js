@@ -195,7 +195,7 @@ class TwigRenderer {
 
   closeServer() {
     this.phpServer.kill();
-    process.exit();
+    //process.exit(0);
   }
 
   /**
