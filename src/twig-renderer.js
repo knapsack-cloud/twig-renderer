@@ -195,6 +195,7 @@ class TwigRenderer {
 
   closeServer() {
     this.phpServer.kill();
+    process.exit();
   }
 
   /**
@@ -240,6 +241,7 @@ class TwigRenderer {
    * @returns {Promise<{ok: boolean, html: string, message: string}>} - Render results
    */
   async render(template, data = {}) {
+    const self = this;
     const result = await this.request('renderFile', {
       template,
       data,
@@ -248,16 +250,16 @@ class TwigRenderer {
     if (this.config.keepAlive === false) {
       if (this.completedRequests <= this.totalRequests) {
         setTimeout(() => {
-          if (this.completedRequests >= this.totalRequests) {
+          if (this.completedRequests === this.totalRequests) {
             console.log('done!');
-            this.closeServer();
+            self.closeServer();
           } else {
             console.log('waiting to finish...!');
           }
         }, 300);
       } else {
         console.log('complete!');
-        this.closeServer();
+        self.closeServer();
       }
     } else {
       console.log('keep alive!');
