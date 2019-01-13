@@ -20,7 +20,7 @@ describe('volume', () => {
 
     const renders = [];
 
-    for (let i = 0; i < 100; i++) {
+    for (let i = 0; i < 1000; i++) {
       renders.push(new Promise(async (resolve) => {
         const result = await twigRenderer.render(`item-${i}.twig`);
 
@@ -38,5 +38,5 @@ describe('volume', () => {
 
     expect(results).toMatchSnapshot();
     expect(results.filter(result => !result.ok)).toEqual([]);
-  }, 120000);
+  }, 500000);
 });
