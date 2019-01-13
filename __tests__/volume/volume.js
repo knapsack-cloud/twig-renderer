@@ -38,5 +38,5 @@ describe('volume', () => {
 
     expect(results).toMatchSnapshot();
     expect(results.filter(result => !result.ok)).toEqual([]);
-  }, 500000);
+  }, 15000);
 });

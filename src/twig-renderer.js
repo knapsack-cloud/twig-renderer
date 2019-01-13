@@ -20,7 +20,6 @@ const serverStates = Object.freeze({
   STARTING: 'STARTING',
   READY: 'READY',
   STOPPING: 'STOPPING',
-  RESTARTING: 'RESTARTING',
 });
 
 class TwigRenderer {
@@ -144,7 +143,7 @@ class TwigRenderer {
     }
 
     if (this.serverState === serverStates.STOPPING) {
-      console.log('Server currently stopping -- trying to restart.');
+      // console.log('Server currently stopping -- trying to restart.');
       this.serverState = serverStates.READY;
       return this.serverState;
     }
@@ -177,12 +176,12 @@ class TwigRenderer {
     });
 
     this.phpServer.on('close', async () => {
-      console.log(`Server ${this.phpServerPort} event: 'close'`);
+      // console.log(`Server ${this.phpServerPort} event: 'close'`);
       this.serverState = serverStates.STOPPING;
     });
 
     this.phpServer.on('exit', async () => {
-      console.log(`Server ${this.phpServerPort} event: 'exit'`);
+      // console.log(`Server ${this.phpServerPort} event: 'exit'`);
       await fs.unlink(sharedConfigPath);
       this.serverState = serverStates.STOPPED;
     });

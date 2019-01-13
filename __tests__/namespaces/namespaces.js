@@ -3,8 +3,6 @@ const fs = require('fs-extra');
 
 const TwigRenderer = require('../../');
 
-jest.setTimeout(30000);
-
 describe('Namespaces', () => {
   const twigRenderer = new TwigRenderer({
     relativeFrom: __dirname,
