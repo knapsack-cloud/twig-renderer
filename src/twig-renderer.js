@@ -33,6 +33,7 @@ class TwigRenderer {
       console.error('Error: php cli required. ', err.message);
       process.exit(1);
     }
+
     this.serverState = serverStates.STOPPED;
     this.inProgressRequests = 0;
     this.totalRequests = 0;
@@ -202,7 +203,7 @@ class TwigRenderer {
     if (this.config.verbose) {
       // console.log(`TwigRender js init complete. PHP server started on port ${port}`);
     }
-    this.checkServerWhileStarting();
+    await this.checkServerWhileStarting();
     return this.serverState;
   }
 
