@@ -170,15 +170,16 @@ class TwigRenderer {
       sharedConfigPath,
     ]);
 
+    // the PHP close event appears to happen first, THEN the exit event
     this.phpServer.on('close', async () => {
       // console.log(`Server ${this.phpServerPort} event: 'close'`);
-      await fs.unlink(sharedConfigPath);
-      this.serverState = serverStates.STOPPED;
+      this.serverState = serverStates.STOPPING;
     });
 
-    this.phpServer.on('exit', () => {
+    this.phpServer.on('exit', async () => {
       // console.log(`Server ${this.phpServerPort} event: 'exit'`);
-      this.serverState = serverStates.STOPPING;
+      await fs.unlink(sharedConfigPath);
+      this.serverState = serverStates.STOPPED;
     });
 
     this.phpServer.on('disconnect', () => {
