@@ -141,6 +141,13 @@ class TwigRenderer {
       return this.serverState;
     }
 
+    // try to handle situation when stopping the current instance but another request comes through
+    if (this.serverState === serverStates.STOPPING) {
+      // console.log('Server currently stopping -- trying to restart.');
+      this.serverState = serverStates.READY;
+      return this.serverState;
+    }
+
     if (this.config.verbose) {
       // console.log('Initializing PHP Server...');
     }
