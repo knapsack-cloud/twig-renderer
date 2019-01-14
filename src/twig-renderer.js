@@ -164,11 +164,16 @@ class TwigRenderer {
     const sharedConfigPath = path.join(__dirname, `shared-config--${port}.json`);
     await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
 
-    this.phpServer = execa('php', [
+    const params = [
       path.join(__dirname, 'server--async.php'),
       port,
       sharedConfigPath,
-    ]);
+    ];
+
+    this.phpServer = execa('php', params, {
+      cleanup: true,
+      detached: false,
+    });
 
     // the PHP close event appears to happen first, THEN the exit event
     this.phpServer.on('close', async () => {
