@@ -208,6 +208,25 @@ class TwigRenderer {
 
   closeServer() {
     this.phpServer.kill();
+  async closeServer() {
+    // console.log('checking if we can stop the server...');
+    if (this.config.keepAlive === false) {
+      if (this.completedRequests === this.totalRequests
+        && this.inProgressRequests === 0
+        && (
+          this.serverState !== serverStates.STOPPING
+          || this.serverState !== serverStates.STOPPED
+        )
+      ) {
+        this.stop();
+      } else {
+        setTimeout(() => {
+          if (this.completedRequests === this.totalRequests && this.inProgressRequests === 0) {
+            this.stop();
+          }
+        }, 300);
+      }
+    }
   }
 
   /**
@@ -253,10 +272,12 @@ class TwigRenderer {
    * @returns {Promise<{ok: boolean, html: string, message: string}>} - Render results
    */
   async render(template, data = {}) {
-    return this.request('renderFile', {
+    const result = await this.request('renderFile', {
       template,
       data,
     });
+    this.closeServer(); // try to cleanup the current server instance before returning results
+    return result;
   }
 
   /**
@@ -266,10 +287,12 @@ class TwigRenderer {
    * @returns {Promise<{ok: boolean, html: string, message: string}>}  - Render results
    */
   async renderString(template, data = {}) {
-    return this.request('renderString', {
+    const result = await this.request('renderString', {
       template,
       data,
     });
+    this.closeServer(); // try to cleanup the current server instance before returning results
+    return result;
   }
 
   async getMeta() {
@@ -348,15 +371,6 @@ class TwigRenderer {
           message: e.message,
         };
         attempt += 1;
-      }
-    }
-    if (!this.config.keepAlive) {
-      if (this.completedRequests === this.totalRequests) {
-        setTimeout(() => {
-          if (this.completedRequests === this.totalRequests) {
-            this.closeServer();
-          }
-        }, 300);
         this.inProgressRequests -= 1;
       }
     }
