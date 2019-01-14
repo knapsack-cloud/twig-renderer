@@ -206,8 +206,14 @@ class TwigRenderer {
     return this.serverState;
   }
 
-  closeServer() {
+  stop() {
+    // console.log(`stopping server with port ${this.phpServerPort}`);
+    this.serverState = serverStates.STOPPED;
     this.phpServer.kill();
+    // ↓ not 100% sure if we need this w/ execa; other exec examples seem to do this for cleanup
+    this.phpServer.removeAllListeners();
+  }
+
   async closeServer() {
     // console.log('checking if we can stop the server...');
     if (this.config.keepAlive === false) {
