@@ -33,6 +33,7 @@ class TwigRenderer {
       console.error('Error: php cli required. ', err.message);
       process.exit(1);
     }
+
     this.serverState = serverStates.STOPPED;
     this.inProgressRequests = 0;
     this.totalRequests = 0;
@@ -141,6 +142,13 @@ class TwigRenderer {
       return this.serverState;
     }
 
+    // try to handle situation when stopping the current instance but another request comes through
+    if (this.serverState === serverStates.STOPPING) {
+      // console.log('Server currently stopping -- trying to restart.');
+      this.serverState = serverStates.READY;
+      return this.serverState;
+    }
+
     if (this.config.verbose) {
       // console.log('Initializing PHP Server...');
     }
@@ -157,21 +165,27 @@ class TwigRenderer {
     const sharedConfigPath = path.join(__dirname, `shared-config--${port}.json`);
     await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
 
-    this.phpServer = execa('php', [
+    const params = [
       path.join(__dirname, 'server--async.php'),
       port,
       sharedConfigPath,
-    ]);
+    ];
 
-    this.phpServer.on('close', async () => {
-      // console.log(`Server ${this.phpServerPort} event: 'close'`);
-      await fs.unlink(sharedConfigPath);
-      this.serverState = serverStates.STOPPED;
+    this.phpServer = execa('php', params, {
+      cleanup: true,
+      detached: false,
     });
 
-    this.phpServer.on('exit', () => {
-      // console.log(`Server ${this.phpServerPort} event: 'exit'`);
+    // the PHP close event appears to happen first, THEN the exit event
+    this.phpServer.on('close', async () => {
+      // console.log(`Server ${this.phpServerPort} event: 'close'`);
       this.serverState = serverStates.STOPPING;
+    });
+
+    this.phpServer.on('exit', async () => {
+      // console.log(`Server ${this.phpServerPort} event: 'exit'`);
+      await fs.unlink(sharedConfigPath);
+      this.serverState = serverStates.STOPPED;
     });
 
     this.phpServer.on('disconnect', () => {
@@ -189,12 +203,37 @@ class TwigRenderer {
     if (this.config.verbose) {
       // console.log(`TwigRender js init complete. PHP server started on port ${port}`);
     }
-    this.checkServerWhileStarting();
+    await this.checkServerWhileStarting();
     return this.serverState;
   }
 
-  closeServer() {
+  stop() {
+    // console.log(`stopping server with port ${this.phpServerPort}`);
+    this.serverState = serverStates.STOPPED;
     this.phpServer.kill();
+    // ↓ not 100% sure if we need this w/ execa; other exec examples seem to do this for cleanup
+    this.phpServer.removeAllListeners();
+  }
+
+  async closeServer() {
+    // console.log('checking if we can stop the server...');
+    if (this.config.keepAlive === false) {
+      if (this.completedRequests === this.totalRequests
+        && this.inProgressRequests === 0
+        && (
+          this.serverState !== serverStates.STOPPING
+          || this.serverState !== serverStates.STOPPED
+        )
+      ) {
+        this.stop();
+      } else {
+        setTimeout(() => {
+          if (this.completedRequests === this.totalRequests && this.inProgressRequests === 0) {
+            this.stop();
+          }
+        }, 300);
+      }
+    }
   }
 
   /**
@@ -240,10 +279,12 @@ class TwigRenderer {
    * @returns {Promise<{ok: boolean, html: string, message: string}>} - Render results
    */
   async render(template, data = {}) {
-    return this.request('renderFile', {
+    const result = await this.request('renderFile', {
       template,
       data,
     });
+    this.closeServer(); // try to cleanup the current server instance before returning results
+    return result;
   }
 
   /**
@@ -253,10 +294,12 @@ class TwigRenderer {
    * @returns {Promise<{ok: boolean, html: string, message: string}>}  - Render results
    */
   async renderString(template, data = {}) {
-    return this.request('renderString', {
+    const result = await this.request('renderString', {
       template,
       data,
     });
+    this.closeServer(); // try to cleanup the current server instance before returning results
+    return result;
   }
 
   async getMeta() {
@@ -281,13 +324,13 @@ class TwigRenderer {
       console.log(`About to render & server on port ${this.phpServerPort} is ${this.serverState}`);
     }
 
-    this.inProgressRequests += 1;
     const attempts = 3;
     let attempt = 0;
     let results;
 
     while (attempt < attempts) {
       try {
+        this.inProgressRequests += 1;
         const requestUrl = `${this.phpServerUrl}?${qs.stringify({
           type,
         })}`;
@@ -314,6 +357,8 @@ class TwigRenderer {
             html: await res.text(), // eslint-disable-line no-await-in-loop
           };
         }
+        this.inProgressRequests -= 1;
+        this.completedRequests += 1;
 
         if (this.config.verbose) {
           // console.log('vvvvvvvvvvvvvvv');
@@ -333,17 +378,7 @@ class TwigRenderer {
           message: e.message,
         };
         attempt += 1;
-      }
-    }
-    this.inProgressRequests -= 1;
-    this.completedRequests += 1;
-    if (!this.config.keepAlive) {
-      if (this.completedRequests === this.totalRequests) {
-        setTimeout(() => {
-          if (this.completedRequests === this.totalRequests) {
-            this.closeServer();
-          }
-        }, 300);
+        this.inProgressRequests -= 1;
       }
     }
     return results;
