@@ -1,6 +1,6 @@
-workflow "New workflow" {
+workflow "Main" {
   on = "push"
-  resolves = ["docker://basaltinc/docker-node-php-base:latest"]
+  resolves = ["semantic release"]
 }
 
 action "install" {
@@ -19,4 +19,17 @@ action "docker://basaltinc/docker-node-php-base:latest" {
   needs = ["build"]
   runs = "npm"
   args = "test"
+}
+
+action "if master" {
+  uses = "actions/bin/filter@d820d56839906464fb7a57d1b4e1741cf5183efa"
+  needs = ["docker://basaltinc/docker-node-php-base:latest"]
+  args = "branch master"
+}
+
+action "semantic release" {
+  uses = "docker://basaltinc/docker-node-php-base:latest"
+  needs = ["if master"]
+  runs = "npx"
+  args = "semantic-release"
 }
