@@ -24,7 +24,7 @@ export function formatSchemaErrors(errors) {
         return e.message;
     }
   }).map(error => `🛑 ${error}`);
-  return msgs.join('\n')
+  return msgs.join('\n');
 }
 
 /**
