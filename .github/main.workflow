@@ -2,7 +2,7 @@ workflow "Main" {
   on = "push"
   resolves = [
     "semantic release",
-    "aslant",
+    "eslint",
   ]
 }
 
@@ -37,7 +37,7 @@ action "semantic release" {
   args = "semantic-release"
 }
 
-action "aslant" {
+action "eslint" {
   uses = "hallee/eslint-action@master"
   needs = ["install"]
   secrets = ["GITHUB_TOKEN"]
