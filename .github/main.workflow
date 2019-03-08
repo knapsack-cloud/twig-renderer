@@ -5,8 +5,7 @@ workflow "New workflow" {
 
 action "install" {
   uses = "docker://basaltinc/docker-node-php-base:latest"
-  args = "install && composer install"
-  runs = "npm"
+  runs = ["sh", "-c", "npm install && composer install"]
 }
 
 action "build" {
