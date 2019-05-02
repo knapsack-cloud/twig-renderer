@@ -58,6 +58,7 @@
   "files": [
     "config.schema.json",
     "dist",
+    "index.d.ts",
     "vendor"
   ],
   "commentOnFiles": "we are explicitely including 'vendor' in the 'files' array above so it is present on install without the need to run 'composer install'. ",
