@@ -24,7 +24,7 @@
     "ajv": "^6.5.2",
     "execa": "^1.0.0",
     "find-free-port": "^2.0.0",
-    "fs-extra": "^7.0.1",
+    "fs-extra": "^8.0.1",
     "node-fetch": "^2.1.2",
     "sleep-promise": "^8.0.1"
   },
