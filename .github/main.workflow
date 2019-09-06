@@ -35,7 +35,10 @@ action "semantic release" {
   needs = ["if master"]
   runs = "npx"
   args = "semantic-release"
-  secrets = ["GITHUB_TOKEN"]
+  secrets = [
+    "GITHUB_TOKEN",
+    "NPM_TOKEN",
+  ]
 }
 
 action "eslint" {
