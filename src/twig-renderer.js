@@ -165,7 +165,10 @@ class TwigRenderer {
     const sharedConfigPath = path.join(__dirname, `shared-config--${port}.json`);
     await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
 
+    const phpMemoryLimit = '4048M'; // @todo make user configurable
     const params = [
+      '-d',
+      `memory_limit=${phpMemoryLimit}`,
       path.join(__dirname, 'server--async.php'),
       port,
       sharedConfigPath,
