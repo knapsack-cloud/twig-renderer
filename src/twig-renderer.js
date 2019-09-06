@@ -1,12 +1,13 @@
 import path from 'path';
 import qs from 'querystring';
-import fp from 'find-free-port';
 import fetch from 'node-fetch';
 import sleep from 'sleep-promise';
 import fs from 'fs-extra';
 import execa from 'execa';
+import getPort from 'get-port';
+import Conf from 'conf';
 import Ajv from 'ajv';
-import { getRandomInt, formatSchemaErrors, getAllFolders } from './utils';
+import { formatSchemaErrors, getAllFolders } from './utils';
 import configSchema from '../config.schema';
 
 const ajv = new Ajv({
@@ -34,6 +35,7 @@ class TwigRenderer {
       process.exit(1);
     }
 
+    this.configStore = new Conf();
     this.serverState = serverStates.STOPPED;
     this.inProgressRequests = 0;
     this.totalRequests = 0;
@@ -136,6 +138,25 @@ class TwigRenderer {
     });
   }
 
+  async getOpenPort() {
+    let portSelected = await getPort({
+      host: '127.0.0.1', // helps ensure the host being checked matches the PHP server being spun up
+    });
+
+    // pick another port if the one selected has already been taken
+    while (this.configStore.has(`ports.${portSelected}`)) {
+      // eslint-disable-next-line no-await-in-loop
+      portSelected = await getPort({
+        host: '127.0.0.1', // helps ensure the host being checked matches the PHP server being spun up
+      });
+    }
+
+    // remember which ports have been assigned to avoid giving out the same port twice
+    this.configStore.set(`ports.${portSelected}`, true);
+
+    return portSelected;
+  }
+
   async init() {
     if (this.serverState === serverStates.STARTING) {
       // console.log('No need to re-init');
@@ -154,20 +175,16 @@ class TwigRenderer {
     }
     this.serverState = serverStates.STARTING;
 
-    // @todo improve method of selecting a port to try
-    // Just because a port is available now, doesn't mean it wont be taken in 5ms :P
-    const portAttempt = getRandomInt(10000, 65000);
-    const [port] = await fp(portAttempt);
-    this.phpServerPort = port;
-    this.phpServerUrl = `http://127.0.0.1:${port}`;
+    this.phpServerPort = await this.getOpenPort();
+    this.phpServerUrl = `http://127.0.0.1:${this.phpServerPort}`;
 
     // @todo Pass config to PHP server a better way than writing JSON file, then reading in PHP
-    const sharedConfigPath = path.join(__dirname, `shared-config--${port}.json`);
+    const sharedConfigPath = path.join(__dirname, `shared-config--${this.phpServerPort}.json`);
     await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
 
     const params = [
       path.join(__dirname, 'server--async.php'),
-      port,
+      this.phpServerPort,
       sharedConfigPath,
     ];
 
