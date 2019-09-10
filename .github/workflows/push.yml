@@ -1,0 +1,37 @@
+on: push
+name: Main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: build
+      uses: actions/npm@59b64a598378f31e49cb76f27d6f3312b582f680
+      with:
+        args: run build
+    - name: docker://basaltinc/docker-node-php-base:latest
+      uses: docker://basaltinc/docker-node-php-base:latest
+      with:
+        entrypoint: npm
+        args: test
+    - name: install
+      uses: docker://basaltinc/docker-node-php-base:latest
+      with:
+        entrypoint: sh
+        args: -c "npm install && composer install"
+    - name: if master
+      uses: actions/bin/filter@d820d56839906464fb7a57d1b4e1741cf5183efa
+      with:
+        args: branch master
+    - name: eslint
+      uses: hallee/eslint-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: semantic release
+      uses: docker://basaltinc/docker-node-php-base:latest
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      with:
+        entrypoint: npx
+        args: semantic-release
