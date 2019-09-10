@@ -25,7 +25,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: semantic release
       uses: docker://basaltinc/docker-node-php-base:latest
-      if: ${{ github.ref == 'master' }}
+      if: github.ref == 'master'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
