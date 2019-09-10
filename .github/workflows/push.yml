@@ -5,6 +5,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
+    - name: install
+      uses: docker://basaltinc/docker-node-php-base:latest
+      with:
+        entrypoint: sh
+        args: -c "npm install && composer install"
     - name: build
       uses: actions/npm@59b64a598378f31e49cb76f27d6f3312b582f680
       with:
@@ -14,11 +19,6 @@ jobs:
       with:
         entrypoint: npm
         args: test
-    - name: install
-      uses: docker://basaltinc/docker-node-php-base:latest
-      with:
-        entrypoint: sh
-        args: -c "npm install && composer install"
     - name: if master
       uses: actions/bin/filter@d820d56839906464fb7a57d1b4e1741cf5183efa
       with:
