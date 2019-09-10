@@ -19,16 +19,13 @@ jobs:
       with:
         entrypoint: npm
         args: test
-    - name: if master
-      uses: actions/bin/filter@d820d56839906464fb7a57d1b4e1741cf5183efa
-      with:
-        args: branch master
     - name: eslint
       uses: hallee/eslint-action@master
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: semantic release
       uses: docker://basaltinc/docker-node-php-base:latest
+      if: ${{ github.ref }} == 'master'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
