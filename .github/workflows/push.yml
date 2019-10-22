@@ -9,7 +9,7 @@ jobs:
       uses: docker://basaltinc/docker-node-php-base:latest
       with:
         entrypoint: sh
-        args: -c "npm install && composer install"
+        args: -c "npm ci && composer install"
     - name: build
       uses: actions/npm@59b64a598378f31e49cb76f27d6f3312b582f680
       with:
