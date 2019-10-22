@@ -1,3 +1,10 @@
+## [0.12.2](https://github.com/basaltinc/twig-renderer/compare/v0.12.1...v0.12.2) (2019-10-22)
+
+
+### Bug Fixes
+
+* return error messages in HTML ([a3848c9](https://github.com/basaltinc/twig-renderer/commit/a3848c9f3b3614c412b35cacd813045e5951d8fa))
+
 ## [0.12.1](https://github.com/basaltinc/twig-renderer/compare/v0.12.0...v0.12.1) (2019-09-06)
 
 
