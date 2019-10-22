@@ -84,11 +84,14 @@ class TwigRenderer {
       $response = [
         'ok' => true,
         'html' => trim($html),
+        'message' => '',
       ];
     } catch (\Exception $exception) {
+      $message = 'Error trying to render twig string. ' . $exception->getMessage();
       $response = [
         'ok' => false,
-        'message' => 'Error trying to render twig string. ' . $exception->getMessage(),
+        'message' => $message,
+        'html' => '<pre><code>' . $message . '</code></pre>',
       ];
     }
     return $response;
@@ -101,11 +104,14 @@ class TwigRenderer {
       $response = [
         'ok' => true,
         'html' => trim($html),
+        'message' => '',
       ];
     } catch (\Exception $exception) {
+      $message = 'Error trying to render "' . $templatePath . '". ' . $exception->getMessage();
       $response = [
         'ok' => false,
-        'message' => 'Error trying to render "' . $templatePath . '". ' . $exception->getMessage(),
+        'message' => $message,
+        'html' => '<pre><code>' . $message . '</code></pre>',
       ];
     }
     if ($this->config['hasExtraInfoInResponses']) {

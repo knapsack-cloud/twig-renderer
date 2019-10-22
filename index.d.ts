@@ -27,15 +27,15 @@ declare class TwigRenderer {
   completedRequests: number;
   config: TwigRendererConfig;
   constructor(userConfig: TwigRendererConfig);
-  render:(template: string, data?: object) => Promise<{
+  render: (template: string, data?: object) => Promise<{
     ok: boolean,
-    html?: string,
-    message?: string,
+    html: string,
+    message: string,
   }>;
-  renderString:(template: string, data?: object) => Promise<{
+  renderString: (template: string, data?: object) => Promise<{
     ok: boolean,
-    html?: string,
-    message?: string,
+    html: string,
+    message: string,
   }>;
   getMeta: () => Promise<object>;
 }
