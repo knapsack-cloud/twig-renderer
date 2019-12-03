@@ -1,3 +1,10 @@
+# [0.13.0](https://github.com/basaltinc/twig-renderer/compare/v0.12.2...v0.13.0) (2019-12-03)
+
+
+### Features
+
+* upgrade Twig to v1.42.2 ([451f09e](https://github.com/basaltinc/twig-renderer/commit/451f09e667f676f1031c4e8e81e22b8baa27e8f8))
+
 ## [0.12.2](https://github.com/basaltinc/twig-renderer/compare/v0.12.1...v0.12.2) (2019-10-22)
 
 
