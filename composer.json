@@ -9,7 +9,7 @@
   },
   "require": {
     "ext-json": "*",
-    "twig/twig": "^1.0.0",
+    "twig/twig": "^1.41.1",
     "react/http": "^0.8.3"
   }
 }
