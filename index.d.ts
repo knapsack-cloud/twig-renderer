@@ -1,4 +1,4 @@
-interface TwigRendererConfig {
+export interface TwigRendererConfig {
   src: {
     /** Root directories for Twig Loader */
     roots: string[];
