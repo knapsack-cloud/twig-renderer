@@ -5,7 +5,6 @@ import sleep from 'sleep-promise';
 import fs from 'fs-extra';
 import execa from 'execa';
 import getPort from 'get-port';
-import Conf from 'conf';
 import Ajv from 'ajv';
 import { formatSchemaErrors, getAllFolders } from './utils';
 import configSchema from '../config.schema';
@@ -35,7 +34,8 @@ class TwigRenderer {
       process.exit(1);
     }
 
-    this.configStore = new Conf();
+    /** @type {Set<number>} */
+    this.portsUsed = new Set();
     this.serverState = serverStates.STOPPED;
     this.inProgressRequests = 0;
     this.totalRequests = 0;
@@ -44,7 +44,10 @@ class TwigRenderer {
     const isValid = validateSchemaAndAssignDefaults(this.config);
     if (!isValid) {
       const { errors } = validateSchemaAndAssignDefaults;
-      const msgs = ['Error: Please check config passed into TwigRenderer.', formatSchemaErrors(errors)].join('\n');
+      const msgs = [
+        'Error: Please check config passed into TwigRenderer.',
+        formatSchemaErrors(errors),
+      ].join('\n');
       console.error(msgs);
       if (process.env.NODE_ENV === 'testing') {
         process.exitCode = 1;
@@ -61,7 +64,10 @@ class TwigRenderer {
         process.exitCode = 1;
         throw new Error(msg);
       }
-      this.config.relativeFrom = path.resolve(process.cwd(), this.config.relativeFrom);
+      this.config.relativeFrom = path.resolve(
+        process.cwd(),
+        this.config.relativeFrom,
+      );
     } else {
       this.config.relativeFrom = process.cwd();
     }
@@ -70,7 +76,9 @@ class TwigRenderer {
       this.config.alterTwigEnv = this.config.alterTwigEnv.map((item) => {
         const isAbsolute = path.isAbsolute(item.file);
         return {
-          file: isAbsolute ? item.file : path.resolve(this.config.relativeFrom, item.file),
+          file: isAbsolute
+            ? item.file
+            : path.resolve(this.config.relativeFrom, item.file),
           functions: item.functions,
         };
       });
@@ -78,7 +86,10 @@ class TwigRenderer {
 
     this.config = TwigRenderer.processPaths(this.config);
     // Writing this so `server--sync.php` can use
-    fs.writeFileSync(path.join(__dirname, 'shared-config.json'), JSON.stringify(this.config, null, '  '));
+    fs.writeFileSync(
+      path.join(__dirname, 'shared-config.json'),
+      JSON.stringify(this.config, null, '  '),
+    );
   }
 
   /**
@@ -110,7 +121,10 @@ class TwigRenderer {
     if (namespaces) {
       namespaces = namespaces.map(namespace => ({
         id: namespace.id,
-        paths: checkPaths(namespace.paths, { relativeFrom, recursive: namespace.recursive }),
+        paths: checkPaths(namespace.paths, {
+          relativeFrom,
+          recursive: namespace.recursive,
+        }),
       }));
     }
 
@@ -143,16 +157,17 @@ class TwigRenderer {
       host: '127.0.0.1', // helps ensure the host being checked matches the PHP server being spun up
     });
 
+    /* eslint-disable no-await-in-loop */
     // pick another port if the one selected has already been taken
-    while (this.configStore.has(`ports.${portSelected}`)) {
-      // eslint-disable-next-line no-await-in-loop
+    while (this.portsUsed.has(portSelected)) {
       portSelected = await getPort({
         host: '127.0.0.1', // helps ensure the host being checked matches the PHP server being spun up
       });
     }
+    /* eslint-enable no-await-in-loop */
 
     // remember which ports have been assigned to avoid giving out the same port twice
-    this.configStore.set(`ports.${portSelected}`, true);
+    this.portsUsed.add(portSelected);
 
     return portSelected;
   }
@@ -179,8 +194,14 @@ class TwigRenderer {
     this.phpServerUrl = `http://127.0.0.1:${this.phpServerPort}`;
 
     // @todo Pass config to PHP server a better way than writing JSON file, then reading in PHP
-    const sharedConfigPath = path.join(__dirname, `shared-config--${this.phpServerPort}.json`);
-    await fs.writeFile(sharedConfigPath, JSON.stringify(this.config, null, '  '));
+    const sharedConfigPath = path.join(
+      __dirname,
+      `shared-config--${this.phpServerPort}.json`,
+    );
+    await fs.writeFile(
+      sharedConfigPath,
+      JSON.stringify(this.config, null, '  '),
+    );
 
     const phpMemoryLimit = '4048M'; // @todo make user configurable
     const params = [
@@ -238,17 +259,19 @@ class TwigRenderer {
   async closeServer() {
     // console.log('checking if we can stop the server...');
     if (this.config.keepAlive === false) {
-      if (this.completedRequests === this.totalRequests
+      if (
+        this.completedRequests === this.totalRequests
         && this.inProgressRequests === 0
-        && (
-          this.serverState !== serverStates.STOPPING
-          || this.serverState !== serverStates.STOPPED
-        )
+        && (this.serverState !== serverStates.STOPPING
+          || this.serverState !== serverStates.STOPPED)
       ) {
         this.stop();
       } else {
         setTimeout(() => {
-          if (this.completedRequests === this.totalRequests && this.inProgressRequests === 0) {
+          if (
+            this.completedRequests === this.totalRequests
+            && this.inProgressRequests === 0
+          ) {
             this.stop();
           }
         }, 300);
@@ -282,8 +305,8 @@ class TwigRenderer {
   async checkServerWhileStarting() {
     while (this.serverState === serverStates.STARTING) {
       // console.log(`checkServerWhileStarting: ${this.serverState}`);
-      await this.checkIfServerIsReady(); // eslint-disable-line no-await-in-loop
-      await sleep(100); // eslint-disable-line no-await-in-loop
+      await this.checkIfServerIsReady();
+      await sleep(100);
     }
     return this.serverState;
   }
@@ -333,15 +356,17 @@ class TwigRenderer {
     }
 
     while (this.serverState !== serverStates.READY) {
-      await sleep(250); // eslint-disable-line no-await-in-loop
+      await sleep(250);
     }
 
     while (this.inProgressRequests > this.config.maxConcurrency) {
-      await sleep(250); // eslint-disable-line no-await-in-loop
+      await sleep(250);
     }
 
     if (this.config.verbose) {
-      console.log(`About to render & server on port ${this.phpServerPort} is ${this.serverState}`);
+      console.log(
+        `About to render & server on port ${this.phpServerPort} is ${this.serverState}`,
+      );
     }
 
     const attempts = 3;
@@ -356,7 +381,7 @@ class TwigRenderer {
         })}`;
 
         // @todo Fail if no response after X seconds
-        const res = await fetch(requestUrl, { // eslint-disable-line no-await-in-loop
+        const res = await fetch(requestUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -369,12 +394,12 @@ class TwigRenderer {
         const warning = headers.get('Warning');
 
         if (contentType === 'application/json') {
-          results = await res.json(); // eslint-disable-line no-await-in-loop
+          results = await res.json();
         } else {
           results = {
             ok,
             message: warning,
-            html: await res.text(), // eslint-disable-line no-await-in-loop
+            html: await res.text(),
           };
         }
         this.inProgressRequests -= 1;
@@ -382,7 +407,13 @@ class TwigRenderer {
 
         if (this.config.verbose) {
           // console.log('vvvvvvvvvvvvvvv');
-          console.log(`Render request received: Ok: ${ok ? 'true' : 'false'}, Status Code: ${status}, type: ${type}. ${body.template ? `template: ${body.template}` : ''}`);
+          console.log(
+            `Render request received: Ok: ${
+              ok ? 'true' : 'false'
+            }, Status Code: ${status}, type: ${type}. ${
+              body.template ? `template: ${body.template}` : ''
+            }`,
+          );
           if (warning) {
             console.warn('Warning: ', warning);
           }

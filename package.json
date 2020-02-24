@@ -26,7 +26,6 @@
     "fs-extra": "^7.0.1",
     "node-fetch": "^2.1.2",
     "sleep-promise": "^8.0.1",
-    "conf": "^5.0.0",
     "get-port": "^5.0.0"
   },
   "devDependencies": {

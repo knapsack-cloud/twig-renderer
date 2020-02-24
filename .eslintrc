@@ -1,16 +1,12 @@
 {
-  "extends": [
-    "airbnb",
-    "plugin:jest/recommended"
-  ],
-  "plugins": [
-    "jest"
-  ],
+  "extends": ["airbnb", "plugin:jest/recommended"],
+  "plugins": ["jest"],
   "env": {
     "jest/globals": true
   },
   "rules": {
     "no-console": "off",
+    "no-await-in-loop": "off",
     "no-plusplus": [
       "error",
       {
