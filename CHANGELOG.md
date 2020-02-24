@@ -1,3 +1,12 @@
+## [0.13.2](https://github.com/basaltinc/twig-renderer/compare/v0.13.1...v0.13.2) (2020-02-24)
+
+
+### Bug Fixes
+
+* ci release syntax ([ff5cf66](https://github.com/basaltinc/twig-renderer/commit/ff5cf669bc918842be18c91b35da3eec015898c7))
+* ci syntax ([1136963](https://github.com/basaltinc/twig-renderer/commit/11369631eb3cea4be634165d25284fb21b4e6996))
+* update php deps ([bf817eb](https://github.com/basaltinc/twig-renderer/commit/bf817eb7819b51c3e42fe5a3c9f24e906f36883c))
+
 ## [0.13.1](https://github.com/basaltinc/twig-renderer/compare/v0.13.0...v0.13.1) (2020-02-24)
 
 
