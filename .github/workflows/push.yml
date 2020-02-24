@@ -17,11 +17,12 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: semantic release
-      uses: docker://basaltinc/docker-node-php-base:latest
+      #uses: docker://basaltinc/docker-node-php-base:latest
+      run: npx semantic-release
       if: github.ref == 'master'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      with:
-        entrypoint: npx
-        args: semantic-release
+#       with:
+#         entrypoint: npx
+#         args: semantic-release
