@@ -11,14 +11,9 @@ jobs:
         entrypoint: sh
         args: -c "npm ci && composer install"
     - name: build
-      uses: actions/npm@59b64a598378f31e49cb76f27d6f3312b582f680
-      with:
-        args: run build
-    - name: docker://basaltinc/docker-node-php-base:latest
-      uses: docker://basaltinc/docker-node-php-base:latest
-      with:
-        entrypoint: npm
-        args: test
+      run: npm run build
+    - name: test
+      run: npm test
     - name: eslint
       uses: hallee/eslint-action@master
       env:
