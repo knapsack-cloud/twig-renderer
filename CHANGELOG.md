@@ -1,3 +1,11 @@
+## [0.13.1](https://github.com/basaltinc/twig-renderer/compare/v0.13.0...v0.13.1) (2020-02-24)
+
+
+### Bug Fixes
+
+* export config TypeScript types ([1702b56](https://github.com/basaltinc/twig-renderer/commit/1702b569a173225fab9cdc5ba1a002ff92609c68))
+* remove need to save ports used list to file system ([71285ab](https://github.com/basaltinc/twig-renderer/commit/71285aba317ce8b91db34cc088a19d398051254e))
+
 # [0.13.0](https://github.com/basaltinc/twig-renderer/compare/v0.12.2...v0.13.0) (2019-12-03)
 
 
