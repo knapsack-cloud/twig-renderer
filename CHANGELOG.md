@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/basaltinc/twig-renderer/compare/v1.0.1...v2.0.0) (2020-06-04)
+
+
+### Features
+
+* update Twig from v1 => v2 ([#64](https://github.com/basaltinc/twig-renderer/issues/64)) ([68b87f0](https://github.com/basaltinc/twig-renderer/commit/68b87f04b452becd49db280e17842546c3e19b34))
+
+
+### BREAKING CHANGES
+
+* Twig PHP updated from v1 => v2 - everything *should* work fine
+
 ## [1.0.1](https://github.com/basaltinc/twig-renderer/compare/v1.0.0...v1.0.1) (2020-06-04)
 
 
