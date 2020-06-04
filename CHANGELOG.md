@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/basaltinc/twig-renderer/compare/v1.0.0...v1.0.1) (2020-06-04)
+
+
+### Bug Fixes
+
+* test automatic releases ([ec001d8](https://github.com/basaltinc/twig-renderer/commit/ec001d89aaaeb3f4dce74db525256ddb624a0273))
+
 ## [0.13.2](https://github.com/basaltinc/twig-renderer/compare/v0.13.1...v0.13.2) (2020-02-24)
 
 
