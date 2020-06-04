@@ -12,10 +12,10 @@ jobs:
       run: npm run build
     - name: test
       run: npm test
-    - name: eslint
-      uses: hallee/eslint-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#     - name: eslint
+#       uses: hallee/eslint-action@master
+#       env:
+#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: semantic release
       # this will stop early if it's not on `master`, for some reason using `if: github.ref == 'master'` doesn't work
       run: npx semantic-release
