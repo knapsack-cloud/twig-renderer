@@ -1,7 +1,7 @@
 <?php
 
-function addCustomExtension(\Twig_Environment &$env, $config) {
-  $env->addFunction(new \Twig_SimpleFunction('customTwigFunctionThatSaysWorld', function () {
+function addCustomExtension(\Twig\Environment &$env, $config) {
+  $env->addFunction(new \Twig\TwigFunction('customTwigFunctionThatSaysWorld', function () {
     return 'Custom World';
   }));
 }
