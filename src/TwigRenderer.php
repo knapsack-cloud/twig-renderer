@@ -4,17 +4,17 @@ namespace BasaltInc\TwigRenderer;
 
 class TwigRenderer {
   /**
-   * @var $twig \Twig_Environment
+   * @var $twig \Twig\Environment
    */
   private $twig;
 
   /**
-   * @var $loader \Twig_Loader_Filesystem
+   * @var $loader \Twig\Loader\FilesystemLoader
    */
   private $loader;
 
   /**
-   * @var $loaders \Twig_Loader_Chain
+   * @var $loaders \Twig\Loader\ChainLoader
    */
   private $loaders;
 
@@ -29,7 +29,7 @@ class TwigRenderer {
     if (isset($this->config['relativeFrom'])) {
       $rootPath = $this->config['relativeFrom'];
     }
-    $this->loader = new \Twig_Loader_Filesystem($this->config['src']['roots'], $rootPath);
+    $this->loader = new \Twig\Loader\FilesystemLoader($this->config['src']['roots'], $rootPath);
 
     if (isset($this->config['src']['namespaces'])) {
       foreach ($this->config['src']['namespaces'] as $namespace) {
@@ -39,7 +39,7 @@ class TwigRenderer {
       }
     }
 
-    $this->loaders = new \Twig_Loader_Chain([
+    $this->loaders = new \Twig\Loader\ChainLoader([
       $this->loader,
     ]);
 
@@ -47,7 +47,7 @@ class TwigRenderer {
   }
 
   private function createTwigEnv($loaders) {
-    $twig = new \Twig_Environment($loaders, [
+    $twig = new \Twig\Environment($loaders, [
       'debug' => $this->config['debug'],
       'autoescape' => $this->config['autoescape'],
       'cache' => false, // @todo Implement Twig caching
@@ -68,11 +68,11 @@ class TwigRenderer {
 
   public function renderString($templateString, $data = []) {
     $templateName = 'StringRenderer'; // @todo ensure this simple name is ok; should be!
-    $loader = new \Twig_Loader_Array([
+    $loader = new \Twig\Loader\ArrayLoader([
       $templateName => $templateString,
     ]);
 
-    $loaders = new \Twig_Loader_Chain([
+    $loaders = new \Twig\Loader\ChainLoader([
       $loader,
       $this->loader,
     ]);
@@ -121,7 +121,7 @@ class TwigRenderer {
   }
 
   /**
-   * @return \Twig_Environment
+   * @return \Twig\Environment
    */
   public function getTwig() {
     return $this->twig;
