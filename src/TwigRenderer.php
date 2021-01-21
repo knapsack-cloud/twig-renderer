@@ -107,7 +107,7 @@ class TwigRenderer {
         'message' => '',
       ];
     } catch (\Exception $exception) {
-      $message = 'Error trying to render "' . $templatePath . '". ' . $exception->getMessage();
+      $message = 'Error trying to render "' . $templatePath . '". ' . $exception->getMessage() . ' at ' . $exception->getFile() . ':' . $exception->getLine();;
       $response = [
         'ok' => false,
         'message' => $message,
