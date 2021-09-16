@@ -24,9 +24,9 @@
     "ajv": "^6.5.2",
     "execa": "^1.0.0",
     "fs-extra": "^7.0.1",
+    "get-port": "^5.0.0",
     "node-fetch": "^2.1.2",
-    "sleep-promise": "^8.0.1",
-    "get-port": "^5.0.0"
+    "sleep-promise": "^8.0.1"
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.2.0",
