@@ -2,6 +2,11 @@
 
 namespace BasaltInc\TwigRenderer;
 
+use Twig\Environment;
+use Twig\Loader\ArrayLoader;
+use Twig\Loader\ChainLoader;
+use Twig\Loader\FilesystemLoader;
+
 class TwigRenderer {
   /**
    * @var $twig \Twig\Environment
@@ -29,7 +34,7 @@ class TwigRenderer {
     if (isset($this->config['relativeFrom'])) {
       $rootPath = $this->config['relativeFrom'];
     }
-    $this->loader = new \Twig\Loader\FilesystemLoader($this->config['src']['roots'], $rootPath);
+    $this->loader = new FilesystemLoader($this->config['src']['roots'], $rootPath);
 
     if (isset($this->config['src']['namespaces'])) {
       foreach ($this->config['src']['namespaces'] as $namespace) {
@@ -39,7 +44,7 @@ class TwigRenderer {
       }
     }
 
-    $this->loaders = new \Twig\Loader\ChainLoader([
+    $this->loaders = new ChainLoader([
       $this->loader,
     ]);
 
@@ -47,7 +52,7 @@ class TwigRenderer {
   }
 
   private function createTwigEnv($loaders) {
-    $twig = new \Twig\Environment($loaders, [
+    $twig = new Environment($loaders, [
       'debug' => $this->config['debug'],
       'autoescape' => $this->config['autoescape'],
       'cache' => false, // @todo Implement Twig caching
@@ -68,11 +73,11 @@ class TwigRenderer {
 
   public function renderString($templateString, $data = []) {
     $templateName = 'StringRenderer'; // @todo ensure this simple name is ok; should be!
-    $loader = new \Twig\Loader\ArrayLoader([
+    $loader = new ArrayLoader([
       $templateName => $templateString,
     ]);
 
-    $loaders = new \Twig\Loader\ChainLoader([
+    $loaders = new ChainLoader([
       $loader,
       $this->loader,
     ]);
