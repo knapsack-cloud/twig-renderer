@@ -10,6 +10,6 @@
   "require": {
     "ext-json": "*",
     "twig/twig": "^2.12",
-    "react/http": "^0.8.3"
+    "react/http": "^1.7.0"
   }
 }
