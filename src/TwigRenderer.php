@@ -49,7 +49,7 @@ class TwigRenderer {
   private function createTwigEnv($loaders) {
     $twig = new \Twig_Environment($loaders, [
       'debug' => $this->config['debug'],
-      'autoescape' => $this->config['autoescape'],
+      'autoescape' => $this->config['autoescape'] ? 'html' : false,
       'cache' => false, // @todo Implement Twig caching
     ]);
 
