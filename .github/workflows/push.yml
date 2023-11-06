@@ -4,21 +4,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: install
-      #uses: docker://basaltinc/docker-node-php-base:latest
-      run: npm ci && composer install
-    - name: build
-      run: npm run build
-    - name: test
-      run: npm test
-#     - name: eslint
-#       uses: hallee/eslint-action@master
-#       env:
-#         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: semantic release
-      # this will stop early if it's not on `master`, for some reason using `if: github.ref == 'master'` doesn't work
-      run: npx semantic-release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - uses: actions/checkout@master
+      - name: Use Node.js 18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: install
+        #uses: docker://basaltinc/docker-node-php-base:latest
+        run: npm ci && composer install
+      - name: build
+        run: npm run build
+      - name: test
+        run: npm test
+      #     - name: eslint
+      #       uses: hallee/eslint-action@master
+      #       env:
+      #         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: semantic release
+        # this will stop early if it's not on `master`, for some reason using `if: github.ref == 'master'` doesn't work
+        run: npx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
