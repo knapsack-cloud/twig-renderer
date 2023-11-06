@@ -7,6 +7,7 @@ module.exports = {
     [
       // https://intuit.github.io/auto/docs/generated/npm
       'npm',
+      {},
     ],
     // https://intuit.github.io/auto/docs/generated/released
     'released',
