@@ -1,6 +1,6 @@
 {
   "name": "@basalt/twig-renderer",
-  "version": "2.0.0",
+  "version": "2.1.1",
   "description": "Render templates using Twig PHP, via this Node JS renderer.",
   "main": "dist/twig-renderer.js",
   "module": "dist/twig-renderer.mjs.js",
@@ -24,18 +24,14 @@
     "ajv": "^6.5.2",
     "execa": "^1.0.0",
     "fs-extra": "^7.0.1",
+    "get-port": "^5.0.0",
     "node-fetch": "^2.1.2",
-    "sleep-promise": "^8.0.1",
-    "get-port": "^5.0.0"
+    "sleep-promise": "^8.0.1"
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.2.0",
-    "@semantic-release/changelog": "^3.0.1",
-    "@semantic-release/commit-analyzer": "^6.1.0",
-    "@semantic-release/git": "^7.0.5",
-    "@semantic-release/github": "^5.2.0",
-    "@semantic-release/npm": "^5.0.5",
-    "@semantic-release/release-notes-generator": "^7.1.1",
+    "@auto-it/npm": "^11.0.4",
+    "auto": "^11.0.4",
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^23.6.0",
     "eslint": "^5.9.0",
