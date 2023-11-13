@@ -1,5 +1,7 @@
 <?php
 
+// declare(strict_types=1);
+
 // WARNING: not tested nor supported (though it's very close to working) - actual support is on `server--async.php`.
 
 require dirname(__DIR__) . '/vendor/autoload.php';

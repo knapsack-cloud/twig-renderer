@@ -1,5 +1,7 @@
 <?php
 
+// declare(strict_types=1);
+
 use BasaltInc\TwigRenderer\TwigRenderer;
 use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop\Loop;
@@ -48,7 +50,7 @@ if ($config) {
 //  file_put_contents(__DIR__ . '/info.json', json_encode($twigRenderer->getInfo()));
 }
 
-function formatResponseBody($msgs = [], $ok = false, $html = '') {
+function formatResponseBody($msgs = [], $ok = false, $html = ''): string {
   return json_encode([
     'ok' => $ok,
     'message' => implode(' ', $msgs),
@@ -62,7 +64,7 @@ $server = new Server(function (ServerRequestInterface $request) use (
   &$counter,
   $responseCode,
   $loop
-) {
+): \React\Http\Response|\React\Promise\Promise {
   $headers = [
     'Content-Type' => 'application/json',
     'Access-Control-Allow-Origin' => '*',
@@ -111,7 +113,7 @@ $server = new Server(function (ServerRequestInterface $request) use (
       );
 
     case 'renderFile':
-      return new Promise(function ($resolve, $reject) use ($twigRenderer, $query, $body, $headers) {
+      return new Promise(function ($resolve, $reject) use ($twigRenderer, $query, $body, $headers): void {
         $results = $twigRenderer->render($body['template'], $body['data']);
         $response = new Response(
           $results['ok'] ? 200 : 404,
@@ -122,7 +124,7 @@ $server = new Server(function (ServerRequestInterface $request) use (
       });
 
     case 'renderString':
-      return new Promise(function ($resolve, $reject) use ($twigRenderer, $query, $body, $headers) {
+      return new Promise(function ($resolve, $reject) use ($twigRenderer, $query, $body, $headers): void {
         $results = $twigRenderer->renderString($body['template'], $body['data']);
         $response = new Response(
           $results['ok'] ? 200 : 404,
@@ -138,7 +140,7 @@ $context = [];
 $uri = sprintf("127.0.0.1:%u",$port);
 $socket = new SocketServer($uri, $context, $loop);
 
-$server->on('error', function (Exception $e) {
+$server->on('error', function (Exception $e): void {
   echo 'PHP TwigRenderer Error: ' . $e->getMessage() . PHP_EOL;
 });
 

@@ -1,5 +1,7 @@
 <?php
 
+// declare(strict_types=1);
+
 namespace BasaltInc\TwigRenderer;
 
 use Twig\Environment;
@@ -11,7 +13,7 @@ class TwigRenderer {
   /**
    * @var $twig Environment
    */
-  private $twig;
+  private readonly \Twig\Environment $twig;
 
   /**
    * @var $loader FilesystemLoader
@@ -51,7 +53,7 @@ class TwigRenderer {
     $this->twig = $this->createTwigEnv($this->loaders);
   }
 
-  private function createTwigEnv($loaders) {
+  private function createTwigEnv(\Twig\Loader\ChainLoader $loaders): \Twig\Environment {
     $twig = new Environment($loaders, [
       'debug' => $this->config['debug'],
       'autoescape' => $this->config['autoescape'],
@@ -71,7 +73,7 @@ class TwigRenderer {
     return $twig;
   }
 
-  public function renderString($templateString, $data = []) {
+  public function renderString($templateString, array $data = []) {
     $templateName = 'StringRenderer'; // @todo ensure this simple name is ok; should be!
     $loader = new ArrayLoader([
       $templateName => $templateString,
@@ -102,7 +104,7 @@ class TwigRenderer {
     return $response;
   }
 
-  public function render($templatePath, $data = []) {
+  public function render(string $templatePath, array $data = []) {
     try {
       $template = $this->twig->load($templatePath);
       $html = $template->render($data);
@@ -125,10 +127,7 @@ class TwigRenderer {
     return $response;
   }
 
-  /**
-   * @return Environment
-   */
-  public function getTwig() {
+  public function getTwig(): \Twig\Environment {
     return $this->twig;
   }
 
@@ -136,11 +135,11 @@ class TwigRenderer {
     try {
       $info = [
         'namespaces' => $this->loader->getNamespaces(),
-        'src' => array_map(fn($x) => [
+        'src' => array_map(fn($x): array => [
           'namespace' => $x,
           'paths' => $this->loader->getPaths($x),
         ], $this->loader->getNamespaces()),
-        'extensions' => array_map(fn($ext) => [
+        'extensions' => array_map(fn($ext): array => [
           'name' => $ext->getName(),
         ], $this->twig->getExtensions()),
       ];
