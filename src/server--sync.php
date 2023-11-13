@@ -61,8 +61,8 @@ if ($config) {
   }
 }
 
-if ($twigRenderer) {
-  if (key_exists('templatePath', $query)) {
+if ($twigRenderer instanceof \BasaltInc\TwigRenderer\TwigRenderer) {
+  if (array_key_exists('templatePath', $query)) {
     $templatePath = $query['templatePath'];
   } else {
     // @todo Provide more clear way to "ping" the server and know that it is ready.
@@ -99,7 +99,7 @@ if ($twigRenderer) {
 }
 
 if ($msgs) {
-  header('Warning: ' . join(' ', $msgs));
+  header('Warning: ' . implode(' ', $msgs));
 //  $response['message'] = join(' ', $msgs);
 }
 

@@ -51,7 +51,7 @@ if ($config) {
 function formatResponseBody($msgs = [], $ok = false, $html = '') {
   return json_encode([
     'ok' => $ok,
-    'message' => join(' ', $msgs),
+    'message' => implode(' ', $msgs),
     'html' => $html,
   ], JSON_THROW_ON_ERROR);
 }
