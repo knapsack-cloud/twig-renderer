@@ -1,3 +1,24 @@
+# v2.2.0 (Mon Nov 13 2023)
+
+#### 🚀 Enhancement
+
+- Fix deprecations [#118](https://github.com/knapsack-cloud/twig-renderer/pull/118) ([@greylabel](https://github.com/greylabel))
+
+#### 🐛 Bug Fix
+
+- Update PHP project dependencies. [#117](https://github.com/knapsack-cloud/twig-renderer/pull/117) ([@greylabel](https://github.com/greylabel))
+
+#### 🏠 Internal
+
+- fix CI publish [#120](https://github.com/knapsack-cloud/twig-renderer/pull/120) ([@EvanLovely](https://github.com/EvanLovely))
+
+#### Authors: 2
+
+- Evan Lovely ([@EvanLovely](https://github.com/EvanLovely))
+- Grant Gaudet ([@greylabel](https://github.com/greylabel))
+
+---
+
 # [2.0.0](https://github.com/basaltinc/twig-renderer/compare/v1.0.1...v2.0.0) (2020-06-04)
 
 
