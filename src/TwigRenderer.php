@@ -16,12 +16,12 @@ class TwigRenderer {
   /**
    * @var $loader FilesystemLoader
    */
-  private $loader;
+  private readonly \Twig\Loader\FilesystemLoader $loader;
 
   /**
    * @var $loaders ChainLoader
    */
-  private $loaders;
+  private readonly \Twig\Loader\ChainLoader $loaders;
 
   /**
    * @var $config array - Configuration passed in
@@ -88,7 +88,7 @@ class TwigRenderer {
       $html = $twig->render($templateName, $data);
       $response = [
         'ok' => true,
-        'html' => trim($html),
+        'html' => trim((string) $html),
         'message' => '',
       ];
     } catch (\Exception $exception) {
@@ -108,7 +108,7 @@ class TwigRenderer {
       $html = $template->render($data);
       $response = [
         'ok' => true,
-        'html' => trim($html),
+        'html' => trim((string) $html),
         'message' => '',
       ];
     } catch (\Exception $exception) {
@@ -136,17 +136,13 @@ class TwigRenderer {
     try {
       $info = [
         'namespaces' => $this->loader->getNamespaces(),
-        'src' => array_map(function ($x) {
-          return [
-            'namespace' => $x,
-            'paths' => $this->loader->getPaths($x),
-          ];
-        }, $this->loader->getNamespaces()),
-        'extensions' => array_map(function ($ext) {
-          return [
-            'name' => $ext->getName(),
-          ];
-        }, $this->twig->getExtensions()),
+        'src' => array_map(fn($x) => [
+          'namespace' => $x,
+          'paths' => $this->loader->getPaths($x),
+        ], $this->loader->getNamespaces()),
+        'extensions' => array_map(fn($ext) => [
+          'name' => $ext->getName(),
+        ], $this->twig->getExtensions()),
       ];
     } catch (\Exception $e) {
       $info = [

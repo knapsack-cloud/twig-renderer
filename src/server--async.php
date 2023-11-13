@@ -34,7 +34,7 @@ try {
 }
 
 try {
-  $config = json_decode($configString, true);
+  $config = json_decode($configString, true, 512, JSON_THROW_ON_ERROR);
 } catch (\Exception $e) {
   $msgs[] = 'Error parsing JSON from config';
   $msgs[] = $e->getMessage();
@@ -53,7 +53,7 @@ function formatResponseBody($msgs = [], $ok = false, $html = '') {
     'ok' => $ok,
     'message' => join(' ', $msgs),
     'html' => $html,
-  ]);
+  ], JSON_THROW_ON_ERROR);
 }
 
 $server = new Server(function (ServerRequestInterface $request) use (
@@ -73,7 +73,7 @@ $server = new Server(function (ServerRequestInterface $request) use (
   $query = $request->getQueryParams();
   $body = $request->getBody()->getContents();
   try {
-    $body = json_decode($body ? $body : '{}', true);
+    $body = json_decode($body ?: '{}', true, 512, JSON_THROW_ON_ERROR);
   } catch (\Exception $e) {
     // @todo why doesn't this catch errors from malformed JSON?
     $msgs[] = 'Not able to parse JSON. ' . $e->getMessage();
@@ -107,7 +107,7 @@ $server = new Server(function (ServerRequestInterface $request) use (
             'body' => $body,
             'method' => $method,
           ],
-        ])
+        ], JSON_THROW_ON_ERROR)
       );
       break;
 
@@ -117,7 +117,7 @@ $server = new Server(function (ServerRequestInterface $request) use (
         $response = new Response(
           $results['ok'] ? 200 : 404,
           $headers,
-          json_encode($results)
+          json_encode($results, JSON_THROW_ON_ERROR)
         );
         $resolve($response);
       });
@@ -129,7 +129,7 @@ $server = new Server(function (ServerRequestInterface $request) use (
         $response = new Response(
           $results['ok'] ? 200 : 404,
           $headers,
-          json_encode($results)
+          json_encode($results, JSON_THROW_ON_ERROR)
         );
         $resolve($response);
       });
@@ -137,7 +137,7 @@ $server = new Server(function (ServerRequestInterface $request) use (
   }
 });
 
-$context = array();
+$context = [];
 $uri = sprintf("127.0.0.1:%u",$port);
 $socket = new SocketServer($uri, $context, $loop);
 

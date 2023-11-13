@@ -25,7 +25,7 @@ $config = [];
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
-$configFilePath = dirname(__FILE__) . '/shared-config.json';
+$configFilePath = __DIR__ . '/shared-config.json';
 try {
   $configString = file_get_contents($configFilePath);
 } catch (\Exception $e) {
@@ -34,7 +34,7 @@ try {
 }
 
 try {
-  $config = json_decode($configString, true);
+  $config = json_decode($configString, true, 512, JSON_THROW_ON_ERROR);
 } catch (\Exception $e) {
   $msgs[] = 'Error parsing JSON from config';
   $msgs[] = $e->getMessage();
@@ -46,7 +46,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 // All query string params parsed
 $query = [];
 if (isset($_SERVER['QUERY_STRING'])) {
-  parse_str($_SERVER['QUERY_STRING'], $query);
+  parse_str((string) $_SERVER['QUERY_STRING'], $query);
 }
 
 if ($config) {
@@ -79,7 +79,7 @@ if ($twigRenderer) {
     }
     if ($json) {
       try {
-        $data = json_decode($json, true);
+        $data = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
       } catch (\Exception $e) {
         $msgs[] = 'Not able to parse JSON. ' . $e->getMessage();
         $responseCode = 400;
@@ -105,4 +105,4 @@ if ($msgs) {
 
 http_response_code($responseCode);
 
-echo json_encode($response);
+echo json_encode($response, JSON_THROW_ON_ERROR);
