@@ -25,13 +25,7 @@ class TwigRenderer {
    */
   private readonly \Twig\Loader\ChainLoader $loaders;
 
-  /**
-   * @var $config array
-   */
-  public array $config;
-
-  function __construct(array $config) {
-    $this->config = $config;
+  function __construct(public array $config) {
     $rootPath = getcwd();
     if (isset($this->config['relativeFrom'])) {
       $rootPath = $this->config['relativeFrom'];
