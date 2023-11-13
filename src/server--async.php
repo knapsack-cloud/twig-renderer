@@ -1,11 +1,12 @@
 <?php
 
+use BasaltInc\TwigRenderer\TwigRenderer;
 use Psr\Http\Message\ServerRequestInterface;
-use React\EventLoop\Factory;
+use React\EventLoop\Loop;
 use React\Http\Response;
 use React\Http\Server;
 use React\Promise\Promise;
-use BasaltInc\TwigRenderer\TwigRenderer;
+use React\Socket\SocketServer;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -40,7 +41,7 @@ try {
   $responseCode = 500;
 }
 
-$loop = Factory::create();
+$loop = Loop::get();
 
 if ($config) {
   $twigRenderer = new TwigRenderer($config);
@@ -136,7 +137,9 @@ $server = new Server(function (ServerRequestInterface $request) use (
   }
 });
 
-$socket = new \React\Socket\Server($port, $loop);
+$context = array();
+$uri = sprintf("127.0.0.1:%u",$port);
+$socket = new SocketServer($uri, $context, $loop);
 
 $server->on('error', function (Exception $e) {
   echo 'PHP TwigRenderer Error: ' . $e->getMessage() . PHP_EOL;
