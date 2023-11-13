@@ -1,5 +1,7 @@
 <?php
 
+// declare(strict_types=1);
+
 namespace BasaltInc\TwigRenderer;
 
 use Twig\Environment;
@@ -11,25 +13,19 @@ class TwigRenderer {
   /**
    * @var $twig Environment
    */
-  private $twig;
+  private readonly \Twig\Environment $twig;
 
   /**
    * @var $loader FilesystemLoader
    */
-  private $loader;
+  private readonly \Twig\Loader\FilesystemLoader $loader;
 
   /**
    * @var $loaders ChainLoader
    */
-  private $loaders;
+  private readonly \Twig\Loader\ChainLoader $loaders;
 
-  /**
-   * @var $config array - Configuration passed in
-   */
-  public $config;
-
-  function __construct(array $config) {
-    $this->config = $config;
+  function __construct(public array $config) {
     $rootPath = getcwd();
     if (isset($this->config['relativeFrom'])) {
       $rootPath = $this->config['relativeFrom'];
@@ -51,8 +47,8 @@ class TwigRenderer {
     $this->twig = $this->createTwigEnv($this->loaders);
   }
 
-  private function createTwigEnv($loaders) {
-    $twig = new Environment($loaders, [
+  private function createTwigEnv(\Twig\Loader\ChainLoader $chainLoader): \Twig\Environment {
+    $twigEnvironment = new Environment($chainLoader, [
       'debug' => $this->config['debug'],
       'autoescape' => $this->config['autoescape'],
       'cache' => false, // @todo Implement Twig caching
@@ -63,32 +59,32 @@ class TwigRenderer {
         $file = $alter['file'];
         require_once $file;
         foreach ($alter['functions'] as $function) {
-          $function($twig, $this->config);
+          $function($twigEnvironment, $this->config);
         }
       }
     }
 
-    return $twig;
+    return $twigEnvironment;
   }
 
-  public function renderString($templateString, $data = []) {
+  public function renderString($templateString, array $data = []) {
     $templateName = 'StringRenderer'; // @todo ensure this simple name is ok; should be!
-    $loader = new ArrayLoader([
+    $arrayLoader = new ArrayLoader([
       $templateName => $templateString,
     ]);
 
-    $loaders = new ChainLoader([
-      $loader,
+    $chainLoader = new ChainLoader([
+      $arrayLoader,
       $this->loader,
     ]);
 
-    $twig = $this->createTwigEnv($loaders);
+    $twig = $this->createTwigEnv($chainLoader);
 
     try {
       $html = $twig->render($templateName, $data);
       $response = [
         'ok' => true,
-        'html' => trim($html),
+        'html' => trim((string) $html),
         'message' => '',
       ];
     } catch (\Exception $exception) {
@@ -102,13 +98,13 @@ class TwigRenderer {
     return $response;
   }
 
-  public function render($templatePath, $data = []) {
+  public function render(string $templatePath, array $data = []) {
     try {
       $template = $this->twig->load($templatePath);
       $html = $template->render($data);
       $response = [
         'ok' => true,
-        'html' => trim($html),
+        'html' => trim((string) $html),
         'message' => '',
       ];
     } catch (\Exception $exception) {
@@ -125,10 +121,7 @@ class TwigRenderer {
     return $response;
   }
 
-  /**
-   * @return Environment
-   */
-  public function getTwig() {
+  public function getTwig(): \Twig\Environment {
     return $this->twig;
   }
 
@@ -136,17 +129,13 @@ class TwigRenderer {
     try {
       $info = [
         'namespaces' => $this->loader->getNamespaces(),
-        'src' => array_map(function ($x) {
-          return [
-            'namespace' => $x,
-            'paths' => $this->loader->getPaths($x),
-          ];
-        }, $this->loader->getNamespaces()),
-        'extensions' => array_map(function ($ext) {
-          return [
-            'name' => $ext->getName(),
-          ];
-        }, $this->twig->getExtensions()),
+        'src' => array_map(fn($x): array => [
+          'namespace' => $x,
+          'paths' => $this->loader->getPaths($x),
+        ], $this->loader->getNamespaces()),
+        'extensions' => array_map(fn($ext): array => [
+          'name' => $ext->getName(),
+        ], $this->twig->getExtensions()),
       ];
     } catch (\Exception $e) {
       $info = [

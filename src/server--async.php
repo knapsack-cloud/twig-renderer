@@ -1,5 +1,7 @@
 <?php
 
+// declare(strict_types=1);
+
 use BasaltInc\TwigRenderer\TwigRenderer;
 use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop\Loop;
@@ -34,7 +36,7 @@ try {
 }
 
 try {
-  $config = json_decode($configString, true);
+  $config = json_decode($configString, true, 512, JSON_THROW_ON_ERROR);
 } catch (\Exception $e) {
   $msgs[] = 'Error parsing JSON from config';
   $msgs[] = $e->getMessage();
@@ -48,12 +50,12 @@ if ($config) {
 //  file_put_contents(__DIR__ . '/info.json', json_encode($twigRenderer->getInfo()));
 }
 
-function formatResponseBody($msgs = [], $ok = false, $html = '') {
+function formatResponseBody($msgs = [], $ok = false, $html = ''): string {
   return json_encode([
     'ok' => $ok,
-    'message' => join(' ', $msgs),
+    'message' => implode(' ', $msgs),
     'html' => $html,
-  ]);
+  ], JSON_THROW_ON_ERROR);
 }
 
 $server = new Server(function (ServerRequestInterface $request) use (
@@ -62,7 +64,7 @@ $server = new Server(function (ServerRequestInterface $request) use (
   &$counter,
   $responseCode,
   $loop
-) {
+): \React\Http\Response|\React\Promise\Promise {
   $headers = [
     'Content-Type' => 'application/json',
     'Access-Control-Allow-Origin' => '*',
@@ -73,7 +75,7 @@ $server = new Server(function (ServerRequestInterface $request) use (
   $query = $request->getQueryParams();
   $body = $request->getBody()->getContents();
   try {
-    $body = json_decode($body ? $body : '{}', true);
+    $body = json_decode($body ?: '{}', true, 512, JSON_THROW_ON_ERROR);
   } catch (\Exception $e) {
     // @todo why doesn't this catch errors from malformed JSON?
     $msgs[] = 'Not able to parse JSON. ' . $e->getMessage();
@@ -107,41 +109,38 @@ $server = new Server(function (ServerRequestInterface $request) use (
             'body' => $body,
             'method' => $method,
           ],
-        ])
+        ], JSON_THROW_ON_ERROR)
       );
-      break;
 
     case 'renderFile':
-      return new Promise(function ($resolve, $reject) use ($twigRenderer, $query, $body, $headers) {
+      return new Promise(function ($resolve, $reject) use ($twigRenderer, $query, $body, $headers): void {
         $results = $twigRenderer->render($body['template'], $body['data']);
         $response = new Response(
           $results['ok'] ? 200 : 404,
           $headers,
-          json_encode($results)
+          json_encode($results, JSON_THROW_ON_ERROR)
         );
         $resolve($response);
       });
-      break;
 
     case 'renderString':
-      return new Promise(function ($resolve, $reject) use ($twigRenderer, $query, $body, $headers) {
+      return new Promise(function ($resolve, $reject) use ($twigRenderer, $query, $body, $headers): void {
         $results = $twigRenderer->renderString($body['template'], $body['data']);
         $response = new Response(
           $results['ok'] ? 200 : 404,
           $headers,
-          json_encode($results)
+          json_encode($results, JSON_THROW_ON_ERROR)
         );
         $resolve($response);
       });
-      break;
   }
 });
 
-$context = array();
+$context = [];
 $uri = sprintf("127.0.0.1:%u",$port);
 $socket = new SocketServer($uri, $context, $loop);
 
-$server->on('error', function (Exception $e) {
+$server->on('error', function (Exception $e): void {
   echo 'PHP TwigRenderer Error: ' . $e->getMessage() . PHP_EOL;
 });
 
