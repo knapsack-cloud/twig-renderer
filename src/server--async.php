@@ -109,7 +109,6 @@ $server = new Server(function (ServerRequestInterface $request) use (
           ],
         ], JSON_THROW_ON_ERROR)
       );
-      break;
 
     case 'renderFile':
       return new Promise(function ($resolve, $reject) use ($twigRenderer, $query, $body, $headers) {
@@ -121,7 +120,6 @@ $server = new Server(function (ServerRequestInterface $request) use (
         );
         $resolve($response);
       });
-      break;
 
     case 'renderString':
       return new Promise(function ($resolve, $reject) use ($twigRenderer, $query, $body, $headers) {
@@ -133,7 +131,6 @@ $server = new Server(function (ServerRequestInterface $request) use (
         );
         $resolve($response);
       });
-      break;
   }
 });
 
