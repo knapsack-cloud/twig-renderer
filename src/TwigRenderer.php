@@ -26,9 +26,9 @@ class TwigRenderer {
   private readonly \Twig\Loader\ChainLoader $loaders;
 
   /**
-   * @var $config array - Configuration passed in
+   * @var $config array
    */
-  public $config;
+  public array $config;
 
   function __construct(array $config) {
     $this->config = $config;
