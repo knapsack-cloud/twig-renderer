@@ -5,6 +5,6 @@
 use Twig\Environment;
 use Twig\TwigFunction;
 
-function addCustomExtension(Environment &$env, $config): void {
-  $env->addFunction(new TwigFunction('customTwigFunctionThatSaysWorld', static fn(): string => 'Custom World'));
+function addCustomExtension(Environment &$twigEnvironment, $config): void {
+  $twigEnvironment->addFunction(new TwigFunction('customTwigFunctionThatSaysWorld', static fn(): string => 'Custom World'));
 }

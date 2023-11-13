@@ -53,8 +53,8 @@ class TwigRenderer {
     $this->twig = $this->createTwigEnv($this->loaders);
   }
 
-  private function createTwigEnv(\Twig\Loader\ChainLoader $loaders): \Twig\Environment {
-    $twig = new Environment($loaders, [
+  private function createTwigEnv(\Twig\Loader\ChainLoader $chainLoader): \Twig\Environment {
+    $twigEnvironment = new Environment($chainLoader, [
       'debug' => $this->config['debug'],
       'autoescape' => $this->config['autoescape'],
       'cache' => false, // @todo Implement Twig caching
@@ -65,26 +65,26 @@ class TwigRenderer {
         $file = $alter['file'];
         require_once $file;
         foreach ($alter['functions'] as $function) {
-          $function($twig, $this->config);
+          $function($twigEnvironment, $this->config);
         }
       }
     }
 
-    return $twig;
+    return $twigEnvironment;
   }
 
   public function renderString($templateString, array $data = []) {
     $templateName = 'StringRenderer'; // @todo ensure this simple name is ok; should be!
-    $loader = new ArrayLoader([
+    $arrayLoader = new ArrayLoader([
       $templateName => $templateString,
     ]);
 
-    $loaders = new ChainLoader([
-      $loader,
+    $chainLoader = new ChainLoader([
+      $arrayLoader,
       $this->loader,
     ]);
 
-    $twig = $this->createTwigEnv($loaders);
+    $twig = $this->createTwigEnv($chainLoader);
 
     try {
       $html = $twig->render($templateName, $data);
