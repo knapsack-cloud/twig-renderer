@@ -1,3 +1,15 @@
+# v2.2.1 (Mon Nov 13 2023)
+
+#### 🐛 Bug Fix
+
+- Php code cleanup [#119](https://github.com/knapsack-cloud/twig-renderer/pull/119) ([@greylabel](https://github.com/greylabel))
+
+#### Authors: 1
+
+- Grant Gaudet ([@greylabel](https://github.com/greylabel))
+
+---
+
 # v2.2.0 (Mon Nov 13 2023)
 
 #### 🚀 Enhancement
