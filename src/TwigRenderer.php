@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace BasaltInc\TwigRenderer;
+namespace BasaltInc;
 
 use Twig\Environment;
 use Twig\Loader\ArrayLoader;

@@ -4,12 +4,12 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "BasaltInc\\TwigRenderer\\": "dist/"
+            "BasaltInc\\": "dist/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "BasaltInc\\TwigRenderer\\Tests\\": "tests/"
+            "BasaltInc\\Tests\\": "tests/"
         }
     },
     "config": {

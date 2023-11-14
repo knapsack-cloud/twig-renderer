@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use BasaltInc\TwigRenderer\TwigRenderer;
+use BasaltInc\TwigRenderer;
 use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop\Loop;
 use React\Http\Response;
@@ -10,7 +10,7 @@ use React\Http\Server;
 use React\Promise\Promise;
 use React\Socket\SocketServer;
 
-require __DIR__.'/../vendor/autoload.php';
+require_once dirname(__DIR__).'/vendor/autoload.php';
 
 // CLI args
 $port = $argv[1];

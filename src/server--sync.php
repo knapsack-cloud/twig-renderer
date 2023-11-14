@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 // WARNING: not tested nor supported (though it's very close to working) - actual support is on `server--async.php`.
 
-require dirname(__DIR__).'/vendor/autoload.php';
+use BasaltInc\TwigRenderer;
 
-use BasaltInc\TwigRenderer\TwigRenderer;
+require dirname(__DIR__).'/vendor/autoload.php';
 
 // HTTP Status Codes Used
 // 200 OK - The standard response for successful HTTP requests.
