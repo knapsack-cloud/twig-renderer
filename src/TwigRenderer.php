@@ -50,7 +50,7 @@ class TwigRenderer {
   private function createTwigEnv(\Twig\Loader\ChainLoader $chainLoader): \Twig\Environment {
     $twigEnvironment = new Environment($chainLoader, [
       'debug' => $this->config['debug'],
-      'autoescape' => $this->config['autoescape'],
+      'autoescape' => $this->config['autoescape'] ? 'html' : false,
       'cache' => false, // @todo Implement Twig caching
     ]);
 
