@@ -35,7 +35,14 @@ class TwigRenderer {
     if (isset($this->config['src']['namespaces'])) {
       foreach ($this->config['src']['namespaces'] as $namespace) {
         foreach ($namespace['paths'] as $path) {
-          $this->loader->addPath($path, $namespace['id']);
+          // The twigRenderer tries to access paths which 
+          // might be not present anymore. In that case we 
+          // have to catch this
+          try {
+            $this->loader->addPath($path, $namespace['id']);
+          } catch (Throwable $e) {
+            // ignore
+          }
         }
       }
     }
