@@ -7,11 +7,6 @@
             "BasaltInc\\": "dist/"
         }
     },
-    "autoload-dev": {
-        "psr-4": {
-            "BasaltInc\\Tests\\": "tests/"
-        }
-    },
     "config": {
         "platfrom": {
             "php": "8.2"
@@ -24,8 +19,7 @@
         "twig/twig": "^2.12"
     },
     "require-dev": {
-        "friendsofphp/php-cs-fixer": "^3.38.0",
-        "phpunit/phpunit": "^10.4.2"
+        "friendsofphp/php-cs-fixer": "^3.38.0"
     },
     "sort-packages": true
 }
