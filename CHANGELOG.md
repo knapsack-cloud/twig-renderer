@@ -1,3 +1,19 @@
+# v3.0.0 (Tue Nov 14 2023)
+
+#### 💥 Breaking Change
+
+- Update Twig to version 3. [#122](https://github.com/knapsack-cloud/twig-renderer/pull/122) ([@greylabel](https://github.com/greylabel))
+
+#### 🏠 Internal
+
+- Add tools for and and apply coding standards [#121](https://github.com/knapsack-cloud/twig-renderer/pull/121) ([@greylabel](https://github.com/greylabel))
+
+#### Authors: 1
+
+- Grant Gaudet ([@greylabel](https://github.com/greylabel))
+
+---
+
 # v2.2.1 (Mon Nov 13 2023)
 
 #### 🐛 Bug Fix
