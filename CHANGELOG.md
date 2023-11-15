@@ -1,3 +1,15 @@
+# v3.0.1 (Wed Nov 15 2023)
+
+#### 🐛 Bug Fix
+
+- Move php-cs-fixer to tools directory. [#123](https://github.com/knapsack-cloud/twig-renderer/pull/123) ([@greylabel](https://github.com/greylabel))
+
+#### Authors: 1
+
+- Grant Gaudet ([@greylabel](https://github.com/greylabel))
+
+---
+
 # v3.0.0 (Tue Nov 14 2023)
 
 #### 💥 Breaking Change
