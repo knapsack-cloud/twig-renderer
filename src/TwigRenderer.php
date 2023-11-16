@@ -77,8 +77,7 @@ final class TwigRenderer
     public function render(string $templatePath, array $data = [])
     {
         try {
-            $template = $this->twigEnvironment->load($templatePath);
-            $html = $template->render($data);
+            $html = $this->twigEnvironment->render($templatePath, $data);
             $response = [
                 'ok' => true,
                 'html' => trim((string) $html),
