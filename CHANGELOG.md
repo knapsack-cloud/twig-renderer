@@ -1,3 +1,15 @@
+# v3.0.2 (Fri Jan 05 2024)
+
+#### 🐛 Bug Fix
+
+- Delegate rendering to environment [#92](https://github.com/knapsack-cloud/twig-renderer/pull/92) ([@neclimdul](https://github.com/neclimdul))
+
+#### Authors: 1
+
+- James Gilliland ([@neclimdul](https://github.com/neclimdul))
+
+---
+
 # v3.0.1 (Wed Nov 15 2023)
 
 #### 🐛 Bug Fix
