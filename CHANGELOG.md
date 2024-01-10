@@ -1,3 +1,15 @@
+# v3.2.0 (Wed Jan 10 2024)
+
+#### 🚀 Enhancement
+
+- Update react/http to current release. [#126](https://github.com/knapsack-cloud/twig-renderer/pull/126) ([@greylabel](https://github.com/greylabel))
+
+#### Authors: 1
+
+- Grant Gaudet ([@greylabel](https://github.com/greylabel))
+
+---
+
 # v3.1.0 (Wed Jan 10 2024)
 
 #### 🚀 Enhancement
