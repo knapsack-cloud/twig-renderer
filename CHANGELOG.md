@@ -1,3 +1,15 @@
+# v3.1.0 (Wed Jan 10 2024)
+
+#### 🚀 Enhancement
+
+- Update packages with npm audit. [#127](https://github.com/knapsack-cloud/twig-renderer/pull/127) ([@greylabel](https://github.com/greylabel))
+
+#### Authors: 1
+
+- Grant Gaudet ([@greylabel](https://github.com/greylabel))
+
+---
+
 # v3.0.2 (Fri Jan 05 2024)
 
 #### 🐛 Bug Fix
