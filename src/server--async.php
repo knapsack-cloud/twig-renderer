@@ -5,8 +5,8 @@ declare(strict_types=1);
 use BasaltInc\TwigRenderer;
 use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop\Loop;
-use React\Http\Response;
-use React\Http\Server;
+use React\Http\Message\Response;
+use React\Http\HttpServer;
 use React\Promise\Promise;
 use React\Socket\SocketServer;
 
@@ -59,7 +59,7 @@ function formatResponseBody($msgs = [], $ok = false, $html = ''): string
     ], JSON_THROW_ON_ERROR);
 }
 
-$server = new Server(static function (ServerRequestInterface $request) use ($twigRenderer, &$counter): Response|Promise {
+$server = new HttpServer(static function (ServerRequestInterface $request) use ($twigRenderer, &$counter): Response|Promise {
     $headers = [
         'Content-Type' => 'application/json',
         'Access-Control-Allow-Origin' => '*',
