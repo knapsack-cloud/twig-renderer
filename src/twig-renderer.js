@@ -7,7 +7,7 @@ import execa from 'execa';
 import getPort from 'get-port';
 import Ajv from 'ajv';
 import { formatSchemaErrors, getAllFolders } from './utils';
-import configSchema from '../config.schema';
+import configSchema from '../config.schema.json';
 
 const ajv = new Ajv({
   useDefaults: true,
