@@ -42,7 +42,7 @@
     "eslint-plugin-react": "^7.33.2",
     "husky": "^0.14.3",
     "jest": "^23.6.0",
-    "nodemon": "^1.18.2",
+    "nodemon": "^3.0.2",
     "regenerator-runtime": "^0.14.1",
     "rollup": "^0.67.4",
     "rollup-plugin-babel": "^4.4.0",
