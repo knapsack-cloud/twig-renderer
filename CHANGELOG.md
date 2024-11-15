@@ -1,3 +1,15 @@
+# v3.2.4 (Fri Nov 15 2024)
+
+#### 🐛 Bug Fix
+
+- Update php deps. [#141](https://github.com/knapsack-cloud/twig-renderer/pull/141) ([@greylabel](https://github.com/greylabel))
+
+#### Authors: 1
+
+- Grant Gaudet ([@greylabel](https://github.com/greylabel))
+
+---
+
 # v3.2.3 (Fri Nov 15 2024)
 
 #### 🐛 Bug Fix
