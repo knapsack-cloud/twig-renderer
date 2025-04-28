@@ -1,3 +1,15 @@
+# v3.2.5 (Mon Apr 28 2025)
+
+#### 🐛 Bug Fix
+
+- Update PHP deps and Node version and actions [#145](https://github.com/knapsack-cloud/twig-renderer/pull/145) ([@greylabel](https://github.com/greylabel))
+
+#### Authors: 1
+
+- Grant Gaudet ([@greylabel](https://github.com/greylabel))
+
+---
+
 # v3.2.4 (Fri Nov 15 2024)
 
 #### 🐛 Bug Fix
