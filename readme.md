@@ -6,13 +6,13 @@
 
 *Special thanks to [Salem Ghoweri](https://twitter.com/salem_ghoweri) for collaboration on this project!*
 
-# How to Use
+## How to Use
 
 ```bash
 npm install --save @basalt/twig-renderer
 ```
 
-```
+```php
 const TwigRenderer = require('@basalt/twig-renderer');
 
 const config = { 
@@ -32,7 +32,7 @@ twigRenderer.render('@components/card.twig', { title: 'hi' }).then(results => {
 
 Looking in tests folder can help.
 
-# How to Develop
+## How to Develop
 
 ```bash
 npm install
