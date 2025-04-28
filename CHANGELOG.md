@@ -1,3 +1,15 @@
+# v3.2.6 (Mon Apr 28 2025)
+
+#### 🐛 Bug Fix
+
+- Update php-cs-fixer to 3.75.0 [#146](https://github.com/knapsack-cloud/twig-renderer/pull/146) ([@greylabel](https://github.com/greylabel))
+
+#### Authors: 1
+
+- Grant Gaudet ([@greylabel](https://github.com/greylabel))
+
+---
+
 # v3.2.5 (Mon Apr 28 2025)
 
 #### 🐛 Bug Fix
