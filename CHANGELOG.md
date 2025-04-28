@@ -1,3 +1,15 @@
+# v3.2.7 (Mon Apr 28 2025)
+
+#### 🐛 Bug Fix
+
+- Update JS deps (minor). [#147](https://github.com/knapsack-cloud/twig-renderer/pull/147) ([@greylabel](https://github.com/greylabel))
+
+#### Authors: 1
+
+- Grant Gaudet ([@greylabel](https://github.com/greylabel))
+
+---
+
 # v3.2.6 (Mon Apr 28 2025)
 
 #### 🐛 Bug Fix
