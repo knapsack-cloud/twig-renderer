@@ -27,6 +27,7 @@ $configString = '';
 $config = [];
 $twigRenderer = null;
 $counter = 0;
+$maxConcurrency = 100;
 
 try {
     $configString = file_get_contents($configFilePath);
@@ -47,6 +48,10 @@ $loop = Loop::get();
 
 if ($config) {
     $twigRenderer = new TwigRenderer($config);
+
+    if(array_key_exists('maxConcurrency', $config)) {
+        $maxConcurrency = $config['maxConcurrency'];
+    }
     //  file_put_contents(__DIR__ . '/info.json', json_encode($twigRenderer->getInfo()));
 }
 
@@ -59,80 +64,85 @@ function formatResponseBody($msgs = [], $ok = false, $html = ''): string
     ], JSON_THROW_ON_ERROR);
 }
 
-$server = new HttpServer(static function (ServerRequestInterface $request) use ($twigRenderer, &$counter): Response|Promise {
-    $headers = [
-        'Content-Type' => 'application/json',
-        'Access-Control-Allow-Origin' => '*',
-    ];
-    $msgs = [];
-    ++$counter;
-    $method = $request->getMethod();
-    $query = $request->getQueryParams();
-    $body = $request->getBody()->getContents();
+$server = new HttpServer(
+    new React\Http\Middleware\StreamingRequestMiddleware(),
+    new React\Http\Middleware\LimitConcurrentRequestsMiddleware($maxConcurrency),
+    new React\Http\Middleware\RequestBodyBufferMiddleware(2 * 1024 * 1024), // 2 MiB per request
+    static function (ServerRequestInterface $request) use ($twigRenderer, &$counter): Response|Promise {
+        $headers = [
+            'Content-Type' => 'application/json',
+            'Access-Control-Allow-Origin' => '*',
+        ];
+        $msgs = [];
+        ++$counter;
+        $method = $request->getMethod();
+        $query = $request->getQueryParams();
+        $body = $request->getBody()->getContents();
 
-    try {
-        $body = json_decode($body ?: '{}', true, 512, JSON_THROW_ON_ERROR);
-    } catch (\Exception $exception) {
-        // @todo why doesn't this catch errors from malformed JSON?
-        $msgs[] = 'Not able to parse JSON. '.$exception->getMessage();
+        try {
+            $body = json_decode($body ?: '{}', true, 512, JSON_THROW_ON_ERROR);
+        } catch (\Exception $exception) {
+            // @todo why doesn't this catch errors from malformed JSON?
+            $msgs[] = 'Not able to parse JSON. '.$exception->getMessage();
 
-        return new Response(400, $headers, formatResponseBody($msgs));
-    }
+            return new Response(400, $headers, formatResponseBody($msgs));
+        }
 
-    if (!isset($query['type'])) {
-        return new Response(
-            202,
-            $headers,
-            json_encode([
-                'ok' => true,
-                'message' => "No action correctly requested. Url must have a query param of 'templatePath' for which twig template to render, but yes - the server is running.",
-            ])
-        );
-    }
-
-    // one of: meta, renderFile, renderString
-    $type = $query['type'];
-
-    switch ($type) {
-        case 'meta':
+        if (!isset($query['type'])) {
             return new Response(
-                200,
+                202,
                 $headers,
                 json_encode([
                     'ok' => true,
-                    'info' => $twigRenderer->getInfo(),
-                    'meta' => [
-                        'counter' => $counter,
-                        'query' => $query,
-                        'body' => $body,
-                        'method' => $method,
-                    ],
-                ], JSON_THROW_ON_ERROR)
+                    'message' => "No action correctly requested. Url must have a query param of 'templatePath' for which twig template to render, but yes - the server is running.",
+                ])
             );
+        }
 
-        case 'renderFile':
-            return new Promise(static function ($resolve, $reject) use ($twigRenderer, $body, $headers): void {
-                $results = $twigRenderer->render($body['template'], $body['data']);
-                $response = new Response(
-                    $results['ok'] ? 200 : 404,
-                    $headers,
-                    json_encode($results, JSON_THROW_ON_ERROR)
-                );
-                $resolve($response);
-            });
+        // one of: meta, renderFile, renderString
+        $type = $query['type'];
 
-        case 'renderString':
-            return new Promise(static function ($resolve, $reject) use ($twigRenderer, $body, $headers): void {
-                $results = $twigRenderer->renderString($body['template'], $body['data']);
-                $response = new Response(
-                    $results['ok'] ? 200 : 404,
+        switch ($type) {
+            case 'meta':
+                return new Response(
+                    200,
                     $headers,
-                    json_encode($results, JSON_THROW_ON_ERROR)
+                    json_encode([
+                        'ok' => true,
+                        'info' => $twigRenderer->getInfo(),
+                        'meta' => [
+                            'counter' => $counter,
+                            'query' => $query,
+                            'body' => $body,
+                            'method' => $method,
+                        ],
+                    ], JSON_THROW_ON_ERROR)
                 );
-                $resolve($response);
-            });
+
+            case 'renderFile':
+                return new Promise(static function ($resolve, $reject) use ($twigRenderer, $body, $headers): void {
+                    $results = $twigRenderer->render($body['template'], $body['data']);
+                    $response = new Response(
+                        $results['ok'] ? 200 : 404,
+                        $headers,
+                        json_encode($results, JSON_THROW_ON_ERROR)
+                    );
+                    $resolve($response);
+                });
+
+            case 'renderString':
+                return new Promise(static function ($resolve, $reject) use ($twigRenderer, $body, $headers): void {
+                    $results = $twigRenderer->renderString($body['template'], $body['data']);
+                    $response = new Response(
+                        $results['ok'] ? 200 : 404,
+                        $headers,
+                        json_encode($results, JSON_THROW_ON_ERROR)
+                    );
+                    $resolve($response);
+                });
+        }
     }
-});
+);
 
 $context = [];
 $uri = sprintf('127.0.0.1:%u', $port);
