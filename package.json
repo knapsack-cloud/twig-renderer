@@ -41,7 +41,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "husky": "^0.15.0-rc.13",
-    "jest": "^23.6.0",
+    "jest": "^30.0.4",
     "nodemon": "^1.19.4",
     "regenerator-runtime": "^0.14.1",
     "rollup": "^0.68.2",
