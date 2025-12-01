@@ -28,7 +28,7 @@ class TwigRenderer {
    */
   constructor(userConfig) {
     try {
-      execa.shellSync('php --version');
+      execa.sync('php --version', { shell: true });
     } catch (err) {
       console.error('Error: php cli required. ', err.message);
       process.exit(1);
@@ -40,7 +40,7 @@ class TwigRenderer {
     this.inProgressRequests = 0;
     this.totalRequests = 0;
     this.completedRequests = 0;
-    this.config = Object.assign({}, userConfig);
+    this.config = { ...userConfig };
     const isValid = validateSchemaAndAssignDefaults(this.config);
     if (!isValid) {
       const { errors } = validateSchemaAndAssignDefaults;
@@ -113,13 +113,13 @@ class TwigRenderer {
       return [].concat(...thePaths);
     }
 
-    const processedConfig = Object.assign({}, config);
+    const processedConfig = { ...config };
     const { relativeFrom } = processedConfig;
     let { roots, namespaces } = processedConfig.src;
 
     roots = checkPaths(roots, { relativeFrom });
     if (namespaces) {
-      namespaces = namespaces.map(namespace => ({
+      namespaces = namespaces.map((namespace) => ({
         id: namespace.id,
         paths: checkPaths(namespace.paths, {
           relativeFrom,
@@ -148,7 +148,7 @@ class TwigRenderer {
   static convertLegacyNamespacesConfig(namespaces) {
     return Object.keys(namespaces).map((id) => {
       const value = namespaces[id];
-      return Object.assign({ id }, value);
+      return { id, ...value };
     });
   }
 

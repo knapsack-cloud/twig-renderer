@@ -1,7 +1,6 @@
 const path = require('path');
 const fs = require('fs-extra');
-
-const TwigRenderer = require('../../');
+const TwigRenderer = require('../..');
 
 describe('Namespaces', () => {
   const twigRenderer = new TwigRenderer({
@@ -9,15 +8,8 @@ describe('Namespaces', () => {
     src: {
       roots: ['src'],
       namespaces: [
-        {
-          id: 'atoms',
-          paths: ['atoms'],
-        },
-        {
-          id: 'molecules',
-          recursive: true,
-          paths: [path.join(__dirname, 'molecules')],
-        },
+        { id: 'atoms', paths: ['atoms'] },
+        { id: 'molecules', recursive: true, paths: [path.join(__dirname, 'molecules')] },
       ],
     },
     autoescape: false,
