@@ -1,4 +1,4 @@
-const TwigRenderer = require('../../');
+const TwigRenderer = require('../..');
 
 describe('Twig Extensions', () => {
   const twigRenderer = new TwigRenderer({

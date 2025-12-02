@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
 
-const TwigRenderer = require('../../');
+const TwigRenderer = require('../..');
 
 describe('basic', () => {
   const twigRenderer = new TwigRenderer({

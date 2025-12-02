@@ -23,7 +23,7 @@ export function formatSchemaErrors(errors) {
       default:
         return e.message;
     }
-  }).map(error => `🛑 ${error}`);
+  }).map((error) => `🛑 ${error}`);
   return msgs.join('\n');
 }
 
@@ -43,7 +43,7 @@ export function getRandomInt(min, max) {
  * @param {string} thePath - Path to check
  * @returns {boolean} - is it a directory?
  */
-export const isDir = thePath => fs.statSync(thePath).isDirectory();
+export const isDir = (thePath) => fs.statSync(thePath).isDirectory();
 
 function getAllSubFolders(dir) {
   return fs.readdirSync(dir).reduce((files, file) => {
@@ -65,5 +65,5 @@ export function getAllFolders(dir, relativeFrom = '') {
     console.error(`This path is not a directory: ${dir}`);
   }
   const folders = [dir, ...getAllSubFolders(dir)];
-  return relativeFrom ? folders.map(folder => relative(relativeFrom, folder)) : folders;
+  return relativeFrom ? folders.map((folder) => relative(relativeFrom, folder)) : folders;
 }
