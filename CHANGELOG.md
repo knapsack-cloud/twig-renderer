@@ -1,3 +1,15 @@
+# v3.2.8 (Tue Dec 02 2025)
+
+#### 🐛 Bug Fix
+
+- KSP-6488: upgrade dependencies that have vulnerable cross-spawn version [#154](https://github.com/knapsack-cloud/twig-renderer/pull/154) ([@rizchelwood](https://github.com/rizchelwood))
+
+#### Authors: 1
+
+- Rizchel Wood ([@rizchelwood](https://github.com/rizchelwood))
+
+---
+
 # v3.2.7 (Mon Apr 28 2025)
 
 #### 🐛 Bug Fix
