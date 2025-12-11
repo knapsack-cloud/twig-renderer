@@ -1,3 +1,15 @@
+# v3.2.9 (Thu Dec 11 2025)
+
+#### 🐛 Bug Fix
+
+- Upgrade babel-jest dependency to fix security alert [#157](https://github.com/knapsack-cloud/twig-renderer/pull/157) ([@rizchelwood](https://github.com/rizchelwood))
+
+#### Authors: 1
+
+- Rizchel Wood ([@rizchelwood](https://github.com/rizchelwood))
+
+---
+
 # v3.2.8 (Tue Dec 02 2025)
 
 #### 🐛 Bug Fix
