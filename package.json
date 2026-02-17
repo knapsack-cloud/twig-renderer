@@ -19,7 +19,7 @@
   "dependencies": {
     "@babel/core": "^7.26.10",
     "@babel/preset-env": "^7.26.9",
-    "ajv": "^v6.12.6",
+    "ajv": "^v8.18.0",
     "execa": "^2.1.0",
     "fs-extra": "^7.0.1",
     "get-port": "^5.1.1",
