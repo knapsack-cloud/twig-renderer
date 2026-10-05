@@ -1,3 +1,15 @@
+# v3.2.10 (Mon Oct 05 2026)
+
+#### 🐛 Bug Fix
+
+- chore(ci): publish via npm trusted publishing instead of NPM_TOKEN [#162](https://github.com/knapsack-cloud/twig-renderer/pull/162) ([@freneticpixel](https://github.com/freneticpixel))
+
+#### Authors: 1
+
+- Jim Frenette ([@freneticpixel](https://github.com/freneticpixel))
+
+---
+
 # v3.2.9 (Thu Dec 11 2025)
 
 #### 🐛 Bug Fix
