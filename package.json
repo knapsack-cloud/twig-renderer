@@ -58,7 +58,7 @@
   "commentOnFiles": "we are explicitely including 'vendor' in the 'files' array above so it is present on install without the need to run 'composer install'. ",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/basaltinc/twig-renderer.git"
+    "url": "git+https://github.com/knapsack-cloud/twig-renderer.git"
   },
   "keywords": [
     "twig"
@@ -75,9 +75,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/basaltinc/twig-renderer/issues"
+    "url": "https://github.com/knapsack-cloud/twig-renderer/issues"
   },
-  "homepage": "https://github.com/basaltinc/twig-renderer#readme",
+  "homepage": "https://github.com/knapsack-cloud/twig-renderer#readme",
   "publishConfig": {
     "access": "public"
   },
