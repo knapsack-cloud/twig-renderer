@@ -3,6 +3,16 @@ name: Main
 jobs:
   build:
     runs-on: ubuntu-latest
+    # auto pushes the version bump and tag and writes release notes (contents,
+    # pull-requests, issues). id-token lets npm publish through trusted
+    # publishing (OIDC): @basalt/twig-renderer's Trusted Publisher entry on
+    # npmjs.com binds to this repo and this workflow's filename, so no npm
+    # token is stored here.
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -11,6 +21,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: Ensure npm >= 11.5.1 (required for trusted publishing)
+        run: |
+          npm install -g npm@11.5.1
+          npm --version
       - name: install
         #uses: docker://basaltinc/docker-node-php-base:latest
         run: npm ci && composer install
@@ -26,4 +40,3 @@ jobs:
         run: npx auto shipit
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
