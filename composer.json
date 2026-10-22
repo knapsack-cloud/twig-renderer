@@ -8,16 +8,16 @@
         }
     },
     "config": {
-        "platfrom": {
-            "php": "8.4"
-        }
+        "platform": {
+            "php": "8.2.35"
+        },
+        "sort-packages": true
     },
     "require": {
-        "php": ">=8.2",
+        "php": "~8.2.35 || ~8.3.36 || ~8.4.27 || >=8.5.12",
         "ext-json": "*",
-        "react/http": "^1.11.0",
-        "twig/twig": "^v3.20.0"
+        "react/http": "^1.11.1",
+        "twig/twig": "^3.27.0"
     },
-    "require-dev": {},
-    "sort-packages": true
+    "require-dev": {}
 }

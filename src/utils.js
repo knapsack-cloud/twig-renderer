@@ -67,3 +67,28 @@ export function getAllFolders(dir, relativeFrom = '') {
   const folders = [dir, ...getAllSubFolders(dir)];
   return relativeFrom ? folders.map((folder) => relative(relativeFrom, folder)) : folders;
 }
+
+// Lowest patched release per PHP minor line, as PHP_VERSION_ID. Keep in sync
+// with `require.php` in composer.json; Composer's own platform check only
+// enforces the lowest bound (8.2.35), not the floor of each minor line.
+export const MIN_PHP_VERSIONS = '8.2.35, 8.3.36, 8.4.27 or 8.5.12+';
+const PHP_PATCHED_FLOORS = Object.freeze({
+  80200: 80235,
+  80300: 80336,
+  80400: 80427,
+});
+// 8.5 and every later line
+const PHP_LATEST_LINE = 80500;
+const PHP_LATEST_FLOOR = 80512;
+
+/**
+ * @param {number} phpVersionId - PHP_VERSION_ID, e.g. 80235 for 8.2.35
+ * @returns {boolean} - true if this PHP line has its security patch
+ */
+export function isSupportedPhpVersion(phpVersionId) {
+  if (phpVersionId >= PHP_LATEST_LINE) {
+    return phpVersionId >= PHP_LATEST_FLOOR;
+  }
+  const floor = PHP_PATCHED_FLOORS[Math.floor(phpVersionId / 100) * 100];
+  return floor !== undefined && phpVersionId >= floor;
+}

@@ -8,6 +8,8 @@
 
 ## How to Use
 
+Requires the PHP CLI on your `PATH`, at a patched release: 8.2.35, 8.3.36, 8.4.27, 8.5.12 or newer within each line.
+
 ```bash
 npm install --save @basalt/twig-renderer
 ```

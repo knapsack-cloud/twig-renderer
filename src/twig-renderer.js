@@ -6,7 +6,12 @@ import fs from 'fs-extra';
 import execa from 'execa';
 import getPort from 'get-port';
 import Ajv from 'ajv';
-import { formatSchemaErrors, getAllFolders } from './utils';
+import {
+  formatSchemaErrors,
+  getAllFolders,
+  isSupportedPhpVersion,
+  MIN_PHP_VERSIONS,
+} from './utils';
 import configSchema from '../config.schema.json';
 
 const ajv = new Ajv({
@@ -27,10 +32,19 @@ class TwigRenderer {
    * @param {TwigRendererConfig} userConfig - User config
    */
   constructor(userConfig) {
+    let phpVersionId;
     try {
-      execa.sync('php --version', { shell: true });
+      phpVersionId = Number(
+        execa.sync('php', ['-r', 'echo PHP_VERSION_ID;']).stdout,
+      );
     } catch (err) {
       console.error('Error: php cli required. ', err.message);
+      process.exit(1);
+    }
+    if (!isSupportedPhpVersion(phpVersionId)) {
+      console.error(
+        `Error: php ${MIN_PHP_VERSIONS} required. Found PHP_VERSION_ID ${phpVersionId}.`,
+      );
       process.exit(1);
     }
 
