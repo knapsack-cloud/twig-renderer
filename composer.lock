@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b82e068d035300c94442a9253391dac4",
+    "content-hash": "828e3a687641fe556459e7efccb84d38",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -1031,12 +1031,12 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=8.5.12",
+        "php": "~8.2.35 || ~8.3.36 || ~8.4.27 || >=8.5.12",
         "ext-json": "*"
     },
     "platform-dev": {},
     "platform-overrides": {
-        "php": "8.5.12"
+        "php": "8.2.35"
     },
     "plugin-api-version": "2.9.0"
 }

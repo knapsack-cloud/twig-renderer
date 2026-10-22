@@ -21,12 +21,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      # Keep in sync with `require.php` in composer.json; composer install
-      # fails if setup-php resolves an older patch release.
-      - name: Use PHP 8.5
-        uses: shivammathur/setup-php@v2
+      # Test on the lowest PHP line `require.php` in composer.json allows;
+      # composer install fails if setup-php resolves an unpatched release.
+      # Pinned to a commit because this job holds id-token: write.
+      - name: Use PHP 8.2
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2.40.0
         with:
-          php-version: '8.5'
+          php-version: '8.2'
           tools: composer
       - name: Ensure npm >= 11.5.1 (required for trusted publishing)
         run: |
