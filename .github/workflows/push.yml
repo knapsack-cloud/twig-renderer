@@ -21,6 +21,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+      # Keep in sync with `require.php` in composer.json; composer install
+      # fails if setup-php resolves an older patch release.
+      - name: Use PHP 8.5
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.5'
+          tools: composer
       - name: Ensure npm >= 11.5.1 (required for trusted publishing)
         run: |
           npm install -g npm@11.5.1

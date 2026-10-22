@@ -15,6 +15,10 @@ const ajv = new Ajv({
 
 const validateSchemaAndAssignDefaults = ajv.compile(configSchema);
 
+// Keep in sync with `require.php` in composer.json
+const MIN_PHP_VERSION = '8.5.12';
+const MIN_PHP_VERSION_ID = 80512;
+
 const serverStates = Object.freeze({
   STOPPED: 'STOPPED',
   STARTING: 'STARTING',
@@ -27,10 +31,19 @@ class TwigRenderer {
    * @param {TwigRendererConfig} userConfig - User config
    */
   constructor(userConfig) {
+    let phpVersionId;
     try {
-      execa.sync('php --version', { shell: true });
+      phpVersionId = Number(
+        execa.sync('php', ['-r', 'echo PHP_VERSION_ID;']).stdout,
+      );
     } catch (err) {
       console.error('Error: php cli required. ', err.message);
+      process.exit(1);
+    }
+    if (phpVersionId < MIN_PHP_VERSION_ID) {
+      console.error(
+        `Error: php ${MIN_PHP_VERSION} or newer required. Found PHP_VERSION_ID ${phpVersionId}.`,
+      );
       process.exit(1);
     }
 

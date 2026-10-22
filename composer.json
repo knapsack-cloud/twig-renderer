@@ -9,12 +9,12 @@
     },
     "config": {
         "platform": {
-            "php": "8.2"
+            "php": "8.5.12"
         },
         "sort-packages": true
     },
     "require": {
-        "php": ">=8.2",
+        "php": ">=8.5.12",
         "ext-json": "*",
         "react/http": "^1.11.1",
         "twig/twig": "^3.27.0"
