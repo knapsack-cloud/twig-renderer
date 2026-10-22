@@ -1,3 +1,15 @@
+# v3.2.11 (Thu Oct 22 2026)
+
+#### 🐛 Bug Fix
+
+- fix(deps): patch PHP and npm vulnerabilities for final 3.x release [#163](https://github.com/knapsack-cloud/twig-renderer/pull/163) ([@freneticpixel](https://github.com/freneticpixel))
+
+#### Authors: 1
+
+- Jim Frenette ([@freneticpixel](https://github.com/freneticpixel))
+
+---
+
 # v3.2.10 (Mon Oct 05 2026)
 
 #### 🐛 Bug Fix
